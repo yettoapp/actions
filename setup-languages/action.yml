@@ -21,12 +21,12 @@ runs:
       if: ${{ inputs.ruby == 'true' }}
       with:
         bundler-cache: true
-
+        ruby-version: ${{ inputs.ruby-version }}
     - name: Install Node
       uses: actions/setup-node@v3
       if: ${{ inputs.node == 'true' }}
       with:
-        node-version: 18
+        node-version: ${{ inputs.node-version }}
         cache: 'npm'
 
     - name: Install npm dependencies
