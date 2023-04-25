@@ -1,4 +1,5 @@
-name: "Configure git"
+---
+name: "Sets up the Sisyphus Git user"
 description: "Sets up Git creds for Sisyphus"
 
 runs:

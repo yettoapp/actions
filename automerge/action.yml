@@ -21,7 +21,7 @@ runs:
         with:
           ref: ${{ github.head_ref }}
 
-      - uses: ./.github/actions/sisyphus
+      - uses: yettoapp/actions/setup-sisyphus@main
 
       - uses: ./.github/actions/license
         if: ${{ inputs.run-license-check == 'true' }}
