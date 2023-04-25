@@ -1,0 +1,36 @@
+---
+name: "Sets up language needs"
+description: "Based on the provided inputs, sets up the language environment dependencies"
+inputs:
+  ruby:
+    description: "Set up Ruby environment"
+    default: "false"
+  ruby-version:
+    description: "Ruby version to use"
+    default: "default"
+  node:
+    description: "Set up Node environment"
+    default: "false"
+  node-version:
+    description: "Node version to use"
+    default: "18"
+runs:
+  using: "composite"
+  steps:
+    - uses: ruby/setup-ruby@v1
+      if: ${{ inputs.ruby == 'true' }}
+      with:
+        bundler-cache: true
+
+    - name: Install Node
+      uses: actions/setup-node@v3
+      if: ${{ inputs.node == 'true' }}
+      with:
+        node-version: 18
+        cache: 'npm'
+
+    - name: Install npm dependencies
+      if: ${{ inputs.node == 'true' }}
+      shell: bash
+      run: |
+        npm ci --ignore-scripts --no-audit --no-progress --prefer-offline

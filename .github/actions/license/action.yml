@@ -1,0 +1,20 @@
+name: "Run License Check"
+description: "Validates that all the licenses are up to date."
+
+runs:
+  using: "composite"
+  steps:
+    - uses: yettoapp/actions/setup@main
+      with:
+        ruby: true
+
+    - name: Run license check
+      shell: bash
+      run: script/licenses --update
+
+    - name: Commit licenses
+      shell: bash
+      run: |
+        git add .
+        git commit -m "[auto-license]: Update license information" || true
+        git push

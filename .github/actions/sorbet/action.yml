@@ -1,0 +1,35 @@
+name: "Run Sorbet Check"
+description: "Validates that all the Sorbet types are up to date."
+
+inputs:
+  gh_token:
+    description: 'A GitHub PAT'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: yettoapp/actions/setup@main
+      with:
+        ruby: true
+
+    - name: Set up the Rails application for Tapioca DSL generation
+      env:
+        RAILS_ENV: development
+      shell: bash
+      run: |
+        bin/rails db:create && bin/rails db:migrate
+
+    - name: Update RBI files
+      id: update
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh_token }}
+      shell: bash
+      run: script/typecheck --update
+
+    - name: Commit Sorbet
+      shell: bash
+      run: |
+        git add .
+        git commit -m "[auto-rbi]: Update RBI files" || true
+        git push

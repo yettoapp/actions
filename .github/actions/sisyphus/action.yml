@@ -1,0 +1,11 @@
+name: "Configure git"
+description: "Sets up Git creds for Sisyphus"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run git config
+      shell: bash
+      run: |
+        git config --local user.email "sisyphus@yetto.app"
+        git config --local user.name "Sisyphus"
