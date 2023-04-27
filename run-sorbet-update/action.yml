@@ -1,19 +1,22 @@
-name: "Run Sorbet Check"
+name: "Run Sorbet Update"
 description: "Validates that all the Sorbet types are up to date."
 
 inputs:
-  gh_token:
-    description: 'A GitHub PAT'
-    required: true
+  setup-db:
+    description: "Sets up any necesary database information"
+    default: "false"
 
 runs:
   using: "composite"
   steps:
-    - uses: yettoapp/actions/setup@main
+    - uses: yettoapp/actions/setup-languages@main
       with:
         ruby: true
 
-    - name: Set up the Rails application for Tapioca DSL generation
+    - uses: yettoapp/actions/setup-sisyphus@main
+
+    - if: ${{ inputs.setup-db == 'true' }}
+      name: Set up the Rails application for Tapioca DSL generation
       env:
         RAILS_ENV: development
       shell: bash
@@ -22,8 +25,6 @@ runs:
 
     - name: Update RBI files
       id: update
-      env:
-        GITHUB_TOKEN: ${{ inputs.gh_token }}
       shell: bash
       run: script/typecheck --update
 

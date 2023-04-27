@@ -3,15 +3,6 @@ name: "Automerge PRs"
 
 on:
   workflow_call:
-    inputs:
-      run-license-check:
-        description: "Runs the license check for added dependencies"
-        type: boolean
-        default: true
-      run-sorbet-check:
-        description: "Runs the Sorbet type generation for added dependencies"
-        type: boolean
-        default: true
 
 jobs:
   automerge:
@@ -19,55 +10,29 @@ jobs:
 
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
-        - name: Fetch Dependabot metadata
-          id: dependabot-metadata
-          uses: dependabot/fetch-metadata@v1
-          with:
-            github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Fetch Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-        - uses: actions/checkout@v3
-          with:
-            ref: ${{ github.head_ref }}
+      - uses: actions/checkout@v3
 
-        - uses: yettoapp/actions/setup-sisyphus@main
+      - name: Approve patch and minor updates
+        if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'}}
+        shell: bash
+        run: |
+          gh pr merge --auto --merge "$PR_URL"
+          gh pr review $PR_URL --approve -b "Approving this pull request because it includes a patch or minor update."
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-        - uses: ./.github/actions/license
-          if: ${{ inputs.run-license-check == 'true' }}
-
-        - name: Commit licenses
-          if: ${{ inputs.run-license-check == 'true' }}
-          shell: bash
-          run: |
-            git add .
-            git commit -m "[auto-license]: Update license information" || true
-            git push
-
-        - uses: ./.github/actions/sorbet
-          if: ${{ inputs.run-sorbet-check == 'true' }}
-
-        - name: Commit Sorbet
-          if: ${{ inputs.run-sorbet-check == 'true' }}
-          shell: bash
-          run: |
-            git add .
-            git commit -m "[auto-rbi]: Update RBI files" || true
-            git push
-
-        - name: Approve patch and minor updates
-          if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'}}
-          shell: bash
-          run: |
-            gh pr merge --auto --merge "$PR_URL"
-            gh pr review $PR_URL --approve -b "Approving this pull request because it includes a patch or minor update."
-          env:
-            PR_URL: ${{github.event.pull_request.html_url}}
-            GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-        - name: Comment on major updates of dependencies
-          if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-major' }}
-          shell: bash
-          run: |
-            gh pr comment $PR_URL --body "**Not approving** this PR because it includes a major update of a dependency. Please review the changes and approve manually."
-          env:
-            PR_URL: ${{github.event.pull_request.html_url}}
-            GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Comment on major updates of dependencies
+        if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-major' }}
+        shell: bash
+        run: |
+          gh pr comment $PR_URL --body "**Not approving** this PR because it includes a major update of a dependency. Please review the changes and approve manually."
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
