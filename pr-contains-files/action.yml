@@ -1,0 +1,29 @@
+---
+name: "Check for files in PR"
+description: "Identifies whether or not a PR contains files of a certain type"
+inputs:
+  pattern:
+    description: "The filename pattern to check for"
+    required: true
+  pr_number:
+    description: "The PR number to check"
+    required: true
+outputs:
+  exists:
+    description: "Whether or not the PR contains files of the specified type"
+    value: ${{ steps.searcher.outputs.exists }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check if PR has file pattern
+      shell: bash
+      run: |
+        result=$(gh pr view ${{ inputs.pr_number }} --json files -q '.files[].path' | grep -E '${{ inputs.pattern }}')
+        if [ -n "$result" ]; then
+            : Set output
+            echo "exists=true" >> $GITHUB_OUTPUT
+        else
+            : Set output
+            echo "exists=false" >> $GITHUB_OUTPUT
+        fi
