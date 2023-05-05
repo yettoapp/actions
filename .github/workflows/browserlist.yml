@@ -22,8 +22,6 @@ jobs:
         with:
           node: true
 
-      - uses: yettoapp/actions/setup-sisyphus@main
-
       - run: npx update-browserslist-db@latest
 
       - name: Create Pull Request
