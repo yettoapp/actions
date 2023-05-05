@@ -1,0 +1,27 @@
+---
+name: "Automerge Sisyphus Dependabot PRs"
+
+on:
+  workflow_call:
+
+jobs:
+  automerge_sisyphusbot:
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.pull_request.user.login == 'sisyphusbot' }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Approve Automated PR
+        if: startsWith(github.event.pull_request.title, '[auto')
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge Automated PR
+        if: startsWith(github.event.pull_request.title, '[auto')
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

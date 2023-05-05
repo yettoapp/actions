@@ -1,11 +1,11 @@
 ---
-name: "Automerge PRs"
+name: "Automerge Dependabot PRs"
 
 on:
   workflow_call:
 
 jobs:
-  automerge:
+  automerge_dependabot:
     runs-on: ubuntu-latest
 
     if: ${{ github.actor == 'dependabot[bot]' }}
