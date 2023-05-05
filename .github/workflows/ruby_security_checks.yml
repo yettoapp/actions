@@ -1,0 +1,52 @@
+name: Security
+
+on:
+  workflow_call:
+    secrets:
+      token:
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bundle-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: true
+
+      # Patch-level verification for bundler.
+      - name: Run bundle-audit
+        run: |
+          script/security_checks/bundle-audit
+
+  brakeman: # A static analysis security vulnerability scanner for Ruby on Rails applications
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: yettoapp/actions/pr-contains-files@main
+        id: pr_contains_rb
+        with:
+          pr_number: ${{ github.event.number }}
+          pattern: "\\.(?:rb|erb)$"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: ${{ steps.pr_contains_rb.outputs.exists == 'false' }}
+        run: exit 0
+
+      - name: Set up Ruby
+        uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: true
+
+      - name: brakeman report
+        run: |
+          script/security_checks/brakeman
+          cat security-results.json
