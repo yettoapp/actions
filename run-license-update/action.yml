@@ -4,8 +4,6 @@ description: "Validates that all the licenses are up to date."
 runs:
   using: "composite"
   steps:
-    - uses: yettoapp/actions/setup-sisyphus@main
-
     - name: Run license update
       shell: bash
       run: script/licenses --update

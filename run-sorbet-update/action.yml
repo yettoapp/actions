@@ -13,8 +13,6 @@ runs:
       with:
         ruby: true
 
-    - uses: yettoapp/actions/setup-sisyphus@main
-
     - if: ${{ inputs.setup-db == 'true' }}
       name: Set up the Rails application for Tapioca DSL generation
       env:
