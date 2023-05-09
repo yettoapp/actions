@@ -18,16 +18,15 @@ runs:
     - name: Run license update
       if: failure() # If the verify step fails, run the update step
       shell: bash
-      run:
+      run: |
         $GITHUB_ACTION_PATH/../script/licenses --update
-        git diff-index --quiet HEAD
 
-    - name: Check if licenses were generated
-      if: failure()
-      shell: bash
-      run:
-        echo "There was an error generating files locally! Try running script/licenses --verify locally to see what's wrong."
-        exit 1
+        if git diff-index --quiet HEAD --; then
+          echo "There was an error generating files locally! Try running script/licenses --verify locally to see what's wrong."
+          exit 1
+        else
+          echo "Licenses updated successfully!"
+        fi
 
     - name: Commit licenses
       uses: stefanzweifel/git-auto-commit-action@v4
