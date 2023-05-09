@@ -1,0 +1,14 @@
+name: "Run License Update"
+description: "Validates that all the licenses are up to date."
+
+runs:
+  using: "composite"
+  steps:
+    - uses: yettoapp/actions/setup-languages@main
+      with:
+        ruby: true
+        node: true
+
+    - name: Run license verify
+      shell: bash
+      run: script/licenses --verify
