@@ -13,8 +13,10 @@ runs:
       id: check_verify
       shell: bash
       run: |
-        $GITHUB_ACTION_PATH/../script/licenses --verify &> /dev/null
-        if [ $? -ne 0 ]; then
+        output=$($GITHUB_ACTION_PATH/../script/licenses --verify 2>&1)
+        status="$?"
+        echo "${output}"
+        if [[ "${status}" -ne 0 ]]; then
           echo "needs_verify=true" >> $GITHUB_OUTPUT
         else
           exit 0
