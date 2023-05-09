@@ -6,7 +6,7 @@ runs:
   steps:
     - name: Run license update
       shell: bash
-      run: GITHUB_ACTION_PATH/../script/licenses --update
+      run: $GITHUB_ACTION_PATH/../script/licenses --update
 
     - name: Commit licenses
       uses: stefanzweifel/git-auto-commit-action@v4
