@@ -13,6 +13,16 @@ runs:
       shell: bash
       run: $GITHUB_ACTION_PATH/../script/licenses --verify
 
-    - name: Update licenses
+    - name: Run license update
       if: ${{ failure() }}
-      uses: yettoapp/actions/run-license-update@main
+      shell: bash
+      run: $GITHUB_ACTION_PATH/../script/licenses --update
+
+    - name: Commit licenses
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "[auto-license]: Update license information"
+
+        commit_user_name: Sisyphus
+        commit_user_email: sisyphus@yetto.app
+        commit_author: Sisyphus <sisyphus@yetto.app>
