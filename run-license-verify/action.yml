@@ -11,4 +11,8 @@ runs:
 
     - name: Run license verify
       shell: bash
-      run: script/licenses --verify
+      run: $GITHUB_ACTION_PATH/../script/licenses --verify
+
+    - name: Update licenses
+      if: ${{ failure() }}
+      uses: yettoapp/actions/run-license-update@main

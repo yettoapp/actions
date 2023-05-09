@@ -4,14 +4,9 @@ description: "Updates license data."
 runs:
   using: "composite"
   steps:
-    - uses: yettoapp/actions/setup-languages@main
-      with:
-        ruby: true
-        node: true
-
     - name: Run license update
       shell: bash
-      run: script/licenses --update
+      run: GITHUB_ACTION_PATH/../script/licenses --update
 
     - name: Commit licenses
       uses: stefanzweifel/git-auto-commit-action@v4

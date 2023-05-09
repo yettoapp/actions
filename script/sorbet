@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -e
+
+function usage() {
+  echo "Usage:"
+  echo "$0 [options]"
+  echo ""
+  echo "  Options:"
+  echo "    -u/--update           Update tapioca RBI files"
+  echo "    -v/--verify           Verify tapioca RBI files"
+  echo "    -h/--help             Display this help message"
+  echo ""
+  exit 1
+}
+
+
+while [ "$1" != "" ]; do
+    case $1 in
+    -u | --update)
+        bin/rails db:migrate
+        echo "Updating Tapioca RBI files ..."
+        bin/tapioca gem
+        echo "Updating Tapioca DSL files ..."
+        bin/tapioca dsl
+        echo "Updating Tapioca TODO files ..."
+        bin/tapioca todo
+        ;;
+    -v | --verify)
+        echo "Verify Sorbet types..."
+        bin/bundle exec srb tc
+        echo "Verify gem RBIs are up-to-date ..."
+        bin/tapioca gem --verify
+        echo "Verify duplicates in shims ..."
+        bin/tapioca check-shims
+        ;;
+    -h | --help)
+        usage
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+    esac
+    shift
+done

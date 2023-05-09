@@ -2,7 +2,7 @@ name: "Run Sorbet Update"
 description: "Validates that all the Sorbet types are up to date."
 
 inputs:
-  setup-db:
+  with_db:
     description: "Sets up any necesary database information"
     default: "false"
 
@@ -13,8 +13,8 @@ runs:
       with:
         ruby: true
 
-    - if: ${{ inputs.setup-db == 'true' }}
-      name: Set up the Rails application for Tapioca DSL generation
+    - if: ${{ inputs.with_db == 'true' }}
+      name: Set up the Rails database for Tapioca DSL reflection/generation
       env:
         RAILS_ENV: development
       shell: bash
@@ -24,9 +24,9 @@ runs:
     - name: Update RBI files
       id: update
       shell: bash
-      run: script/typecheck --update
+      run:  $GITHUB_ACTION_PATH/../script/sorbet --update
 
-    - name: Commit licenses
+    - name: Commit types
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "[auto-rbi]: Update RBI files"
