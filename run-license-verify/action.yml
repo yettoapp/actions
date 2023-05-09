@@ -13,21 +13,15 @@ runs:
       id: check_verify
       shell: bash
       run: |
-        output=$($GITHUB_ACTION_PATH/../script/licenses --verify 2>&1)
-        status="$?"
-        echo "${output}"
-        if [[ "${status}" -ne 0 ]]; then
-          echo "needs_verify=true" >> $GITHUB_OUTPUT
-        else
-          exit 0
-        fi
+        $GITHUB_ACTION_PATH/../script/licenses --verify
 
     - name: Run license update
-      if: ${{ steps.check_verify.outputs.needs_verify == 'true' }}
+      if: failure()
       shell: bash
       run: $GITHUB_ACTION_PATH/../script/licenses --update
 
     - name: Commit licenses
+      if: success() || failure()
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "[auto-license]: Update license information"
