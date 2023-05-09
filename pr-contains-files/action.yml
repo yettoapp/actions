@@ -20,13 +20,14 @@ runs:
   using: "composite"
   steps:
     - name: Check if PR has file pattern
+      id: searcher
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         output=$(gh pr view ${{ inputs.pr_number }} --json files -q '.files[] | select(.path|test("${{ inputs.pattern }}"))')
         echo "${output}"
-        if [[ -z "$var" ]]; then
+        if [[ -z "$output" ]]; then
             echo "exists=false" >> "$GITHUB_OUTPUT"
         else
             echo "exists=true" >> "$GITHUB_OUTPUT"
