@@ -24,7 +24,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
-        result=$(gh pr view ${{ inputs.pr_number }} --json files -q '.files[].path' | grep -E '${{ inputs.pattern }}' 2>&1)
+        result=$(gh pr view ${{ inputs.pr_number }} --json files -q '.files[].path' | grep -E '${{ inputs.pattern }}') || echo ''
         if [ -n "$result" ]; then
             : Set output
             echo "exists=true" >> $GITHUB_OUTPUT

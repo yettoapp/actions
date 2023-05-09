@@ -10,11 +10,18 @@ runs:
         node: true
 
     - name: Run license verify
+      id: check_verify
       shell: bash
-      run: $GITHUB_ACTION_PATH/../script/licenses --verify
+      run: |
+        $GITHUB_ACTION_PATH/../script/licenses --verify &> /dev/null
+        if [ $? -ne 0 ]; then
+          echo "needs_verify=true" >> $GITHUB_OUTPUT
+        else
+          exit 0
+        fi
 
     - name: Run license update
-      if: ${{ failure() }}
+      if: ${{ steps.check_verify.outputs.needs_verify == 'true' }}
       shell: bash
       run: $GITHUB_ACTION_PATH/../script/licenses --update
 
