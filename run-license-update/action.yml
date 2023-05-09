@@ -13,10 +13,6 @@ runs:
       with:
         commit_message: "[auto-license]: Update license information"
 
-        branch: license-update
-
-        create_branch: true
-
         commit_user_name: Sisyphus
         commit_user_email: sisyphus@yetto.app
         commit_author: Sisyphus <sisyphus@yetto.app>
