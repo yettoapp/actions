@@ -27,7 +27,7 @@ runs:
         output=$(gh pr view ${{ inputs.pr_number }} --json files -q '.files[] | select(.path|test("${{ inputs.pattern }}"))')
         echo "${output}"
         if [[ -z "$var" ]]; then
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "exists=false" >> "$GITHUB_OUTPUT"
         else
-            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "exists=true" >> "$GITHUB_OUTPUT"
         fi
