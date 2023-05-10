@@ -11,6 +11,8 @@ jobs:
     if: ${{ github.event.pull_request.user.login == 'sisyphusbot' }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Approve Automated PR
         if: startsWith(github.event.pull_request.title, '[auto')
