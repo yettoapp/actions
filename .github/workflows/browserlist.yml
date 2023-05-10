@@ -24,7 +24,12 @@ jobs:
 
       - run: npx update-browserslist-db@latest
 
+      - name: Check for modified files
+        id: git-check
+        run: echo modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi) >> $GITHUB_OUTPUT
+
       - name: Create Pull Request
+        if: steps.git-check.outputs.modified == 'true'
         id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
@@ -42,6 +47,7 @@ jobs:
           labels: "chore, github action"
 
       - name: Enable Pull Request Automerge
+        if: steps.git-check.outputs.modified == 'true'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.token }}
