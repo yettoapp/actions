@@ -1,13 +1,20 @@
 name: "Run License Update"
 description: "Validates that all the licenses are up to date."
+inputs:
+  ruby:
+    description: "Set up Ruby environment"
+    default: "false"
+  node:
+    description: "Set up Node environment"
+    default: "false"
 
 runs:
   using: "composite"
   steps:
     - uses: yettoapp/actions/setup-languages@main
       with:
-        ruby: true
-        node: true
+        ruby: ${{ inputs.ruby }}
+        node: ${{ inputs.node }}
 
     - name: Run license verify
       id: check_verify
