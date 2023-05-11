@@ -19,7 +19,7 @@ runs:
         if [ $result -eq 0 ] ; then
           echo "All licenses are up to date!"
         else
-          $GITHUB_ACTION_PATH/../script/licenses --update || 1
+          output=$($GITHUB_ACTION_PATH/../script/licenses --update || 1)
           result=$?
 
           if git diff-index --quiet HEAD --; then
