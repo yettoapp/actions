@@ -9,21 +9,16 @@ runs:
         ruby: true
         node: true
 
-    - name: Setup upterm session
-      uses: lhotari/action-upterm@v1
-
     - name: Run license verify
       id: check_verify
       shell: bash
       run: |
-        output=$($GITHUB_ACTION_PATH/../script/licenses --verify || 1)
-        result=$?
+        $GITHUB_ACTION_PATH/../script/licenses --verify && true
 
-        if [ $result -eq 0 ] ; then
+        if [ $? -eq 0 ] ; then
           echo "All licenses are up to date!"
         else
-          output=$($GITHUB_ACTION_PATH/../script/licenses --update || 1)
-          result=$?
+          $GITHUB_ACTION_PATH/../script/licenses --update && true
 
           if git diff-index --quiet HEAD --; then
             echo "There was an error generating files! Try running script/licenses --verify locally to see what's wrong."
