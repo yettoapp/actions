@@ -18,7 +18,10 @@ function usage() {
 while [ "$1" != "" ]; do
     case $1 in
     -u | --update)
-        bin/rails db:migrate
+        if [ -n "${DATABASE_URL+1}" ]; then
+            bin/rails db:migrate
+        fi
+
         echo "Updating Tapioca RBI files ..."
         bin/tapioca gem
         echo "Updating Tapioca DSL files ..."

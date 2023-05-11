@@ -1,11 +1,6 @@
 name: "Run Sorbet Update"
 description: "Validates that all the Sorbet types are up to date."
 
-inputs:
-  has_db:
-    description: "Sets up any necesary database information"
-    default: "false"
-
 runs:
   using: "composite"
   steps:
@@ -13,7 +8,7 @@ runs:
       with:
         ruby: true
 
-    - if: ${{ inputs.has_db == 'true' }}
+    - if: ${{ env.DATABASE_URL }}
       name: Set up the Rails database for Tapioca DSL reflection/generation
       env:
         RAILS_ENV: development
