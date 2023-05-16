@@ -56,6 +56,8 @@ runs:
     - name: Post coverage report
       shell: bash
       id: coverage_report
+      env:
+        NO_COLOR: "1"
       run: |
         coverage_report="$(bundle exec ruby $GITHUB_ACTION_PATH/helpers/report.rb || true)"
 
