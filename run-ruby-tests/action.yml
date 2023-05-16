@@ -53,7 +53,7 @@ runs:
         : Install helpers
         echo "$GITHUB_ACTION_PATH/bin" >> $GITHUB_PATH
 
-    - name: Post coverage report
+    - name: Generate coverage report
       shell: bash
       id: coverage_report
       run: |
@@ -61,7 +61,7 @@ runs:
 
         echo "report<<EOF"$'\n'"$coverage_report"$'\n'EOF >> $GITHUB_OUTPUT
 
-    - uses: mshick/add-pr-comment@v2
+    - uses: romeovs/lcov-reporter-action@v0.2.16
       with:
-        message: ${{ steps.coverage_report.outputs.report }}
-        repo-token: ${{ inputs.github_token }}
+        lcov-file: coverage/lcov.info
+        github-token: ${{ inputs.github_token }}

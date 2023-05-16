@@ -1,8 +1,19 @@
-require "simplecov"
-require "simplecov-console"
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+
+  gem "simplecov", "~> 0.18"
+  gem "simplecov-lcov", "~> 0.8"
+end
 
 SimpleCov.collate(Dir["coverage/.resultset.json"], "rails") do
-  formatter SimpleCov::Formatter::Console
+  SimpleCov::Formatter::LcovFormatter.config do |c|
+    c.report_with_single_file = true
+    c.lcov_file_name = 'lcov.info'
+  end
+
+  formatter SimpleCov::Formatter::LcovFormatter
 
   minimum_coverage 100
   maximum_coverage_drop 2
