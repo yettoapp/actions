@@ -44,9 +44,6 @@ runs:
       run: |
         script/test-system
 
-    - name: Upload coverage results
-      uses: actions/upload-artifact@v3
-      if: always()
+    - uses: joshmfrankel/simplecov-check-action@main
       with:
-        name: simplecov-resultset
-        path: coverage
+        github_token: ${{ secrets.GITHUB_TOKEN }}
