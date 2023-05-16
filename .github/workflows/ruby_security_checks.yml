@@ -36,7 +36,7 @@ jobs:
         with:
           pr_number: ${{ github.event.number }}
           pattern: ".rb$|erb$"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Ruby
         if: ${{ steps.pr_contains_rb.outputs.exists == 'true' }}

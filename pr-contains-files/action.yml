@@ -8,7 +8,7 @@ inputs:
   pr_number:
     description: "The PR number to check"
     required: true
-  token:
+  github_token:
     description: "The token used when calling GitHub API"
     required: true
 outputs:
@@ -23,7 +23,7 @@ runs:
       id: searcher
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs.token }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
         output=$(gh pr view ${{ inputs.pr_number }} --json files -q '.files[] | select(.path|test("${{ inputs.pattern }}"))')
         echo "${output}"

@@ -11,6 +11,9 @@ inputs:
   system_tests:
     description: "Run system tests"
     default: "false"
+  github_token:
+    description: "The token used when calling GitHub API"
+    required: true
 
 runs:
   using: "composite"
@@ -49,4 +52,4 @@ runs:
 
     - uses: joshmfrankel/simplecov-check-action@main
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ inputs.github_token }}
