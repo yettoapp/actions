@@ -47,6 +47,20 @@ runs:
       run: |
         script/test-system
 
-    - uses: joshmfrankel/simplecov-check-action@main
+    - name: Install helpers
+      shell: bash
+      run: |
+        : Install helpers
+        echo "$GITHUB_ACTION_PATH/bin" >> $GITHUB_PATH
+
+    - name: Post coverage report
+      shell: bash
+      id: coverage_report
+      run: |
+        coverage_report="$(ruby $GITHUB_ACTION_PATH/helpers/report.rb)"
+        echo "report=$coverage_report" >> $GITHUB_OUTPUT
+
+    - uses: mshick/add-pr-comment@v2
       with:
-        github_token: ${{ inputs.github_token }}
+        message: ${{ steps.coverage_report.outputs.report }}
+        repo-token: ${{ inputs.github_token }}
