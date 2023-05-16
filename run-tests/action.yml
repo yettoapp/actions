@@ -1,0 +1,52 @@
+---
+name: "Run the test suite"
+description: "Based on the provided inputs, sets up the language environment dependencies and runs a test suite."
+inputs:
+  ruby-version:
+    description: "Ruby version to use"
+    default: "default"
+  node:
+    description: "Set up Node environment"
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: yettoapp/actions/setup-languages@main
+      with:
+        ruby: true
+        node: ${{ inputs.node }}
+
+    - if: ${{ env.DATABASE_URL }}
+      name: Set up the Rails database
+      shell: bash
+      run: |
+        bundle exec rake db:create
+        sudo apt-get -yqq install libpq-dev
+        bundle exec rake db:test:prepare
+
+    - if: ${{ env.DATABASE_URL }}
+      name: Set up the Rails assets
+      shell: bash
+      run: |
+        bundle exec rake assets:precompile
+
+    - name: Run tests
+      shell: bash
+      run: |
+        script/ci
+      env:
+        COVERAGE: "1"
+
+    - if: ${{ inputs.system_tests }}
+      name: Run system tests
+      shell: bash
+      run: |
+        script/test-system
+
+    - name: Upload coverage results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: simplecov-resultset
+        path: coverage

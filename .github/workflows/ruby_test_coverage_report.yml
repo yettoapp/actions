@@ -11,31 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: yettoapp/actions/setup-languages@main
-        with:
-          ruby: true
-
-      - name: Run tests
-        run: |
-          script/ci
-        env:
-          COVERAGE: 1
-
-      - name: Upload coverage results
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: simplecov-resultset
-          path: coverage
-
-  coverage:
-    needs: test
+  report:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
