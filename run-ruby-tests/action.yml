@@ -59,7 +59,7 @@ runs:
       run: |
         coverage_report="$(bundle exec ruby $GITHUB_ACTION_PATH/helpers/report.rb || true)"
 
-        echo "report=$coverage_report" >> $GITHUB_OUTPUT
+        echo "report<<EOF"$'\n'"$coverage_report"$'\n'EOF >> $GITHUB_OUTPUT
 
     - uses: mshick/add-pr-comment@v2
       with:
