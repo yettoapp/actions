@@ -12,11 +12,3 @@ SimpleCov.collate(Dir["coverage/.resultset.json"], "rails") do
   end
 end
 
-# do not crash on failure; we want a distinct job to report the coverage error
-module SimpleCov
-  class << self
-    def result_exit_status(_)
-      SimpleCov::ExitCodes::SUCCESS
-    end
-  end
-end

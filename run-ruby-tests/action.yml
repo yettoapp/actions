@@ -57,7 +57,8 @@ runs:
       shell: bash
       id: coverage_report
       run: |
-        coverage_report="$(bundle exec ruby $GITHUB_ACTION_PATH/helpers/report.rb)"
+        coverage_report="$(bundle exec ruby $GITHUB_ACTION_PATH/helpers/report.rb || true)"
+
         echo "report=$coverage_report" >> $GITHUB_OUTPUT
 
     - uses: mshick/add-pr-comment@v2
