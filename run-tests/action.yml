@@ -8,9 +8,6 @@ inputs:
   node:
     description: "Set up Node environment"
     default: "false"
-  system_tests:
-    description: "Run system tests"
-    default: "false"
   github_token:
     description: "The token used when calling GitHub API"
     required: true
@@ -44,7 +41,7 @@ runs:
       env:
         COVERAGE: "1"
 
-    - if: ${{ inputs.system_tests }}
+    - if: ${{ inputs.system_tests == 'true' }}
       name: Run system tests
       shell: bash
       run: |
