@@ -8,6 +8,9 @@ inputs:
   node:
     description: "Set up Node environment"
     default: "false"
+  system_tests:
+    description: "Run system tests"
+    default: "false"
 
 runs:
   using: "composite"
