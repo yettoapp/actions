@@ -4,17 +4,11 @@ gemfile do
   source "https://rubygems.org"
 
   gem "simplecov", "~> 0.18"
-  gem "simplecov-lcov", "~> 0.8"
+  gem "simplecov-console", "~> 0.7"
 end
 
 SimpleCov.collate(Dir["coverage/.resultset.json"], "rails") do
-  SimpleCov::Formatter::LcovFormatter.config do |c|
-    c.output_directory = 'coverage'
-    c.report_with_single_file = true
-    c.lcov_file_name = 'lcov.info'
-  end
-
-  formatter SimpleCov::Formatter::LcovFormatter
+  formatter SimpleCov::Formatter::Console
 
   minimum_coverage 100
   maximum_coverage_drop 2
