@@ -9,6 +9,7 @@ end
 
 SimpleCov.collate(Dir["coverage/.resultset.json"], "rails") do
   SimpleCov::Formatter::LcovFormatter.config do |c|
+    c.output_directory = 'coverage'
     c.report_with_single_file = true
     c.lcov_file_name = 'lcov.info'
   end

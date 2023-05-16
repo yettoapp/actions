@@ -54,6 +54,7 @@ runs:
         echo "$GITHUB_ACTION_PATH/bin" >> $GITHUB_PATH
 
     - name: Generate coverage report
+      if: ${{ github.actor != 'dependabot[bot]' }}
       shell: bash
       id: coverage_report
       run: |
@@ -62,6 +63,7 @@ runs:
         echo "report<<EOF"$'\n'"$coverage_report"$'\n'EOF >> $GITHUB_OUTPUT
 
     - uses: romeovs/lcov-reporter-action@v0.2.16
+      if: ${{ github.actor != 'dependabot[bot]' }}
       with:
         lcov-file: coverage/lcov.info
         github-token: ${{ inputs.github_token }}
