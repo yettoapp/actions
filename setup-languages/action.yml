@@ -22,7 +22,7 @@ runs:
       with:
         bundler-cache: true
         ruby-version: ${{ inputs.ruby-version }}
-        cache-version: 1001
+        cache-version: 200
     - name: Install Node
       uses: actions/setup-node@v3
       if: ${{ inputs.node == 'true' }}
