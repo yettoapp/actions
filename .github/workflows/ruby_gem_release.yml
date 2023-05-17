@@ -1,0 +1,121 @@
+name: Release and publish
+
+on:
+  workflow_call:
+    secrets:
+      github_token:
+        required: true
+      rubygems_api_key:
+        required: true
+    inputs:
+      multiplatform:
+        default: false
+        type: boolean
+      gem_name:
+        required: true
+        type: string
+      version_filepath:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    env:
+        GITHUB_TOKEN: ${{ secrets.github_token }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: yettoapp/actions/setup-languages@main
+        with:
+            ruby: true
+
+      - name: Configure Git
+        run: |
+            git config --local user.email "actions@github.com"
+            git config --local user.name "Actions Auto Build"
+
+      - name: Get current version
+        id: version-label
+        run: |
+            VERSION=$(grep VERSION ${{ inputs.version_filepath }} | head -n 1 | cut -d'"' -f2)
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: |
+            git tag -a v${{ steps.version-label.outputs.version }} -m "Release v${{ steps.version-label.outputs.version }}"
+            git push origin --tags
+
+      - name: Generate CHANGELOG.md
+        id: changelog
+        run: script/generate_changelog
+
+      - name: Commit & Push Changelog
+        run: |
+            git config --local user.email "actions@github.com"
+            git config --local user.name "Actions Auto Build"
+            git add -f CHANGELOG.md
+            git commit -m "docs: update changelog" || true
+            git push
+
+      - name: Publish GitHub release
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            gh release create v${{ steps.version-label.outputs.version }} --generate-notes
+
+      - name: Publish to RubyGems
+        if: ${{ github.event.inputs.multiplatform == 'false' }}
+        run: |
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          printf -- "---\n:rubygems_api_key: ${{ secrets.rubygems_api_key }}\n" > $HOME/.gem/credentials
+          bundle exec rake package
+          for gem in pkg/${{ inputs.gem_name }}-${{ steps.version-label.outputs.version }}*.gem ; do
+            gem push "$gem" --host https://rubygems.org
+          done
+
+  publish:
+    needs: release
+    if: ${{ github.event.inputs.multiplatform == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - ruby
+
+          - x86_64-linux
+          - aarch64-linux
+
+          - x86_64-darwin
+          - arm64-darwin
+
+          - x64-mingw-ucrt
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up languages
+        uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: true
+          node: true
+
+      - name: Publish to RubyGems
+        run: |
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          script/prepare
+          printf -- "---\n:rubygems_api_key: ${{ secrets.rubygems_api_key }}\n" > $HOME/.gem/credentials
+          bundle exec rake gem:${{matrix.platform}}
+          for gem in pkg/${{ inputs.gem_name }}-*.gem ; do
+            gem push "$gem" --host https://rubygems.org
+          done
