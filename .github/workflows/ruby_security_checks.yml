@@ -30,8 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
 
       - uses: yettoapp/actions/pr-contains-files@main
         id: pr_contains_rb
