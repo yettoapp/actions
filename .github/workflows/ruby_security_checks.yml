@@ -24,7 +24,7 @@ jobs:
       # Patch-level verification for bundler.
       - name: Run bundle-audit
         run: |
-          bundle exec brakeman --color -o /dev/stdout -o security-results.json
+          bundle exec bundle-audit check --update
 
   brakeman: # A static analysis security vulnerability scanner for Ruby on Rails applications
     runs-on: ubuntu-latest
@@ -47,5 +47,5 @@ jobs:
       - name: brakeman report
         if: ${{ steps.pr_contains_rb.outputs.exists == 'true' }}
         run: |
-          bundle exec bundle-audit check --update
+          bundle exec brakeman --color -o /dev/stdout -o security-results.json
           cat security-results.json
