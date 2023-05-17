@@ -23,6 +23,9 @@ runs:
         bundler-cache: true
         ruby-version: ${{ inputs.ruby-version }}
         rubygems: latest
+      env:
+        RAILS_ENV: test
+        BUNDLE_WITH: "ci"
 
     - name: Install Node
       uses: actions/setup-node@v3
