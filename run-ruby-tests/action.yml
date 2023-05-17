@@ -66,6 +66,7 @@ runs:
     - uses: mshick/add-pr-comment@v2
       with:
         message: |
+          <!-- type: code_coverage -->
           ## Code coverage
 
           ```
