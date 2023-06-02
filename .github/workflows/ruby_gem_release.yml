@@ -74,7 +74,7 @@ jobs:
 
   publish:
     needs: release
-    if: ${{ inputs.multiplatform == 'false' }}
+    if: inputs.multiplatform == 'false'
     runs-on: ubuntu-latest
 
     steps:
@@ -98,7 +98,7 @@ jobs:
 
   multiplatform_publish:
     needs: release
-    if: ${{ inputs.multiplatform }}
+    if: inputs.multiplatform == 'true'
     strategy:
       fail-fast: false
       matrix:
