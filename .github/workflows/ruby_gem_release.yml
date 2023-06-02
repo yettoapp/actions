@@ -9,6 +9,7 @@ on:
         required: true
     inputs:
       multiplatform:
+        required: false
         default: false
         type: boolean
       gem_name:
@@ -68,7 +69,7 @@ jobs:
           gh release create v${{ steps.version-label.outputs.version }} --generate-notes
 
       - name: Publish to RubyGems
-        if: ${{ inputs.multiplatform == 'false' }}
+        if: ${{ !inputs.multiplatform }}
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
@@ -81,7 +82,7 @@ jobs:
 
   multiplatform_publish:
     needs: release
-    if: ${{ inputs.multiplatform == 'true' }}
+    if: ${{ inputs.multiplatform }}
     strategy:
       fail-fast: false
       matrix:
