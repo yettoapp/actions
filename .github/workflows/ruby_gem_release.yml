@@ -68,7 +68,7 @@ jobs:
           gh release create v${{ steps.version-label.outputs.version }} --generate-notes
 
       - name: Publish to RubyGems
-        if: ${{ github.event.inputs.multiplatform == 'false' }}
+        if: ${{ inputs.multiplatform == 'false' }}
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
@@ -79,9 +79,9 @@ jobs:
             gem push "$gem" --host https://rubygems.org
           done
 
-  publish:
+  multiplatform_publish:
     needs: release
-    if: ${{ github.event.inputs.multiplatform == 'true' }}
+    if: ${{ inputs.multiplatform == 'true' }}
     strategy:
       fail-fast: false
       matrix:
