@@ -28,6 +28,10 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.gh_token }}
     runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.version-label.outputs.version }}
+
     steps:
       - uses: actions/checkout@v3
 
@@ -68,15 +72,27 @@ jobs:
         run: |
           gh release create v${{ steps.version-label.outputs.version }} --generate-notes
 
+  publish:
+    needs: release
+    if: ${{ inputs.multiplatform == 'false' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up languages
+        uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: true
+
       - name: Publish to RubyGems
-        if: ${{ !inputs.multiplatform }}
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
           chmod 0600 $HOME/.gem/credentials
           printf -- "---\n:rubygems_api_key: ${{ secrets.rubygems_api_key }}\n" > $HOME/.gem/credentials
           bundle exec rake package
-          for gem in pkg/${{ inputs.gem_name }}-${{ steps.version-label.outputs.version }}*.gem ; do
+          for gem in pkg/${{ inputs.gem_name }}-${{ needs.release.outputs.version }}*.gem ; do
             gem push "$gem" --host https://rubygems.org
           done
 
@@ -115,6 +131,6 @@ jobs:
           script/prepare
           printf -- "---\n:rubygems_api_key: ${{ secrets.rubygems_api_key }}\n" > $HOME/.gem/credentials
           bundle exec rake gem:${{matrix.platform}}
-          for gem in pkg/${{ inputs.gem_name }}-*.gem ; do
+          for gem in pkg/${{ inputs.gem_name }}-${{ needs.release.outputs.version }}*.gem ; do
             gem push "$gem" --host https://rubygems.org
           done
