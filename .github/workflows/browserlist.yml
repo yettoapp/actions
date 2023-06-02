@@ -3,7 +3,7 @@ name: Update Browserslist database
 on:
   workflow_call:
     secrets:
-      github_token:
+      gh_token:
         required: true
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.github_token }}
+          token: ${{ secrets.gh_token }}
           commit-message: "[auto-browserslist] Update Browserslist db"
           title: "[auto-browserslist] Update Browserslist db"
           body: |
@@ -50,5 +50,5 @@ jobs:
         if: steps.git-check.outputs.modified == 'true'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
-          token: ${{ secrets.github_token }}
+          token: ${{ secrets.gh_token }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}

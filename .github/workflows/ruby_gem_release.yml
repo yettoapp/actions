@@ -3,7 +3,7 @@ name: Release and publish
 on:
   workflow_call:
     secrets:
-      github_token:
+      gh_token:
         required: true
       rubygems_api_key:
         required: true
@@ -25,7 +25,7 @@ permissions:
 jobs:
   release:
     env:
-        GITHUB_TOKEN: ${{ secrets.github_token }}
+      GITHUB_TOKEN: ${{ secrets.gh_token }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,23 +33,23 @@ jobs:
       - name: Set up Ruby
         uses: yettoapp/actions/setup-languages@main
         with:
-            ruby: true
+          ruby: true
 
       - name: Configure Git
         run: |
-            git config --local user.email "actions@github.com"
-            git config --local user.name "Actions Auto Build"
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Actions Auto Build"
 
       - name: Get current version
         id: version-label
         run: |
-            VERSION=$(grep VERSION ${{ inputs.version_filepath }} | head -n 1 | cut -d'"' -f2)
-            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          VERSION=$(grep VERSION ${{ inputs.version_filepath }} | head -n 1 | cut -d'"' -f2)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Create tag
         run: |
-            git tag -a v${{ steps.version-label.outputs.version }} -m "Release v${{ steps.version-label.outputs.version }}"
-            git push origin --tags
+          git tag -a v${{ steps.version-label.outputs.version }} -m "Release v${{ steps.version-label.outputs.version }}"
+          git push origin --tags
 
       - name: Generate CHANGELOG.md
         id: changelog
@@ -57,17 +57,15 @@ jobs:
 
       - name: Commit & Push Changelog
         run: |
-            git config --local user.email "actions@github.com"
-            git config --local user.name "Actions Auto Build"
-            git add -f CHANGELOG.md
-            git commit -m "docs: update changelog" || true
-            git push
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Actions Auto Build"
+          git add -f CHANGELOG.md
+          git commit -m "docs: update changelog" || true
+          git push
 
       - name: Publish GitHub release
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            gh release create v${{ steps.version-label.outputs.version }} --generate-notes
+          gh release create v${{ steps.version-label.outputs.version }} --generate-notes
 
       - name: Publish to RubyGems
         if: ${{ github.event.inputs.multiplatform == 'false' }}
