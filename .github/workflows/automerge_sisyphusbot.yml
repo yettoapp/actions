@@ -1,11 +1,11 @@
 ---
-name: "Automerge Sisyphus Dependabot PRs"
+name: "Automerge Sisyphus PRs"
 
 on:
   workflow_call:
 
 jobs:
-  automerge_sisyphusbot:
+  automerge:
     runs-on: ubuntu-latest
 
     if: ${{ github.event.pull_request.user.login == 'sisyphusbot' }}

@@ -5,7 +5,7 @@ on:
   workflow_call:
 
 jobs:
-  automerge_dependabot:
+  automerge:
     runs-on: ubuntu-latest
 
     if: ${{ github.actor == 'dependabot[bot]' }}
