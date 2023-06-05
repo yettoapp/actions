@@ -8,13 +8,17 @@ on:
       rubygems_api_key:
         required: true
     inputs:
+      gem_name:
+        required: true
+        type: string
       multiplatform:
         required: false
         default: false
         type: boolean
-      gem_name:
-        required: true
-        type: string
+      requires_node:
+        required: false
+        default: false
+        type: boolean
       version_filepath:
         required: true
         type: string
@@ -84,6 +88,7 @@ jobs:
         uses: yettoapp/actions/setup-languages@main
         with:
           ruby: true
+          node: ${{ inputs.requires_node }}
 
       - name: Publish to RubyGems
         run: |
@@ -121,14 +126,16 @@ jobs:
         uses: yettoapp/actions/setup-languages@main
         with:
           ruby: true
-          node: true
+          node: ${{ inputs.requires_node == true}}
 
       - name: Publish to RubyGems
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
           chmod 0600 $HOME/.gem/credentials
-          script/prepare
+
+          script/prepare || echo 0
+
           printf -- "---\n:rubygems_api_key: ${{ secrets.rubygems_api_key }}\n" > $HOME/.gem/credentials
           bundle exec rake gem:${{matrix.platform}}
           for gem in pkg/${{ inputs.gem_name }}-${{ needs.release.outputs.version }}*.gem ; do
