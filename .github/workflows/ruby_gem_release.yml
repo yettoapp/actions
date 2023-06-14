@@ -76,7 +76,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "Actions Auto Build"
           git add -f CHANGELOG.md
-          git commit -m "docs: update changelog" || true
+          git commit -m "[skip test] [auto-docs]: update changelog" || true
           git push
 
       - name: Publish GitHub release
