@@ -62,22 +62,32 @@ jobs:
           VERSION=$(grep VERSION ${{ inputs.version_filepath }} | head -n 1 | cut -d'"' -f2)
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Create tag
-        run: |
-          git tag -a v${{ steps.version-label.outputs.version }} -m "Release v${{ steps.version-label.outputs.version }}"
-          git push origin --tags
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.gh_token }}
 
-      - name: Generate CHANGELOG.md
-        id: changelog
-        run: script/generate_changelog
+      - name: Update CHANGELOG.md
+        run: |
+          echo "## [v${{ steps.version-label.outputs.version }}] - `date +%d-%m-%Y`" >> CHANGELOG.md.tmp
+          echo "${{steps.build_changelog.outputs.changelog}}" >> CHANGELOG.md.tmp
+          echo '-n' >> CHANGELOG.md
+          cat CHANGELOG.md >> CHANGELOG.md.tmp
+          mv CHANGELOG.md.tmp CHANGELOG.md
 
       - name: Commit & Push Changelog
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "Actions Auto Build"
           git add -f CHANGELOG.md
-          git commit -m "[skip test] [auto-docs]: update changelog" || true
+          git commit -m "[auto-docs]: update changelog" || true
           git push
+
+      - name: Create tag
+        run: |
+          git tag -a v${{ steps.version-label.outputs.version }} -m "Release v${{ steps.version-label.outputs.version }}"
+          git push origin --tags
 
       - name: Publish GitHub release
         run: |
@@ -149,47 +159,6 @@ jobs:
             gem push "$gem" --host https://rubygems.org
           done
 
-          multiplatform_publish:
-            needs: release
-            if: ${{ inputs.multiplatform == true && inputs.oxidized == false }}
-            strategy:
-              fail-fast: false
-              matrix:
-                platform:
-                  - ruby
-
-                  - x86_64-linux
-                  - aarch64-linux
-
-                  - x86_64-darwin
-                  - arm64-darwin
-
-                  - x64-mingw-ucrt
-
-            runs-on: ubuntu-latest
-            steps:
-              - uses: actions/checkout@v3
-
-              - name: Set up languages
-                uses: yettoapp/actions/setup-languages@main
-                with:
-                  ruby: true
-                  node: ${{ inputs.requires_node == true}}
-
-              - name: Publish to RubyGems
-                run: |
-                  mkdir -p $HOME/.gem
-                  touch $HOME/.gem/credentials
-                  chmod 0600 $HOME/.gem/credentials
-
-                  script/prepare || echo 0
-
-                  printf -- "---\n:rubygems_api_key: ${{ secrets.rubygems_api_key }}\n" > $HOME/.gem/credentials
-                  bundle exec rake gem:${{matrix.platform}}
-                  for gem in pkg/${{ inputs.gem_name }}-${{ needs.release.outputs.version }}*.gem ; do
-                    gem push "$gem" --host https://rubygems.org
-                  done
-
   oxidized_publish:
     needs: release
     if: ${{ inputs.oxidized == true && inputs.multiplatform == false }}
@@ -197,8 +166,6 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - ruby
-
           - x86_64-linux
           - aarch64-linux
 
