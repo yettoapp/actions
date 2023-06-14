@@ -35,13 +35,7 @@ permissions:
 # "3.2" # LATEST_RUBY_VERSION
 
 jobs:
-  fake-required-status-checks:
-    uses: yettoapp/actions/.github/workflows/skip_required_on_ignored_paths.yml@main
-    with:
-      oxidized: ${{ inputs.oxidized }}
-
   release:
-    needs: fake-required-status-checks
     env:
       GITHUB_TOKEN: ${{ secrets.gh_token }}
     runs-on: ubuntu-latest
