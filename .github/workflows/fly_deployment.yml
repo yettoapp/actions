@@ -1,0 +1,49 @@
+name: Deploy repository to Fly.io
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+      fly_token:
+        required: true
+    inputs:
+      app:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+
+jobs:
+  production:
+    name: Deploy app to production
+    if: inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }}
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - run: flyctl deploy --remote-only -a ${{ inputs.app }} -c vendor/fly-production.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.fly_token }}
+
+  staging:
+    name: Deploy app to staging
+    if: inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }}
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - run: flyctl deploy --remote-only -a ${{ inputs.app }} -c vendor/fly-staging.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.fly_token }}
