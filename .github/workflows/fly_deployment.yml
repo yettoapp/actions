@@ -21,6 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --vm-size=performance-2x -a ${{ inputs.app }}-${{ inputs.environment}} -c vendor/fly/fly-${{ inputs.environment }}.toml
+      - run: fly deploy --remote-only --vm-size=performance-2x -a ${{ inputs.app }}-${{ inputs.environment}} -c vendor/fly/fly-${{ inputs.environment }}.toml
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
