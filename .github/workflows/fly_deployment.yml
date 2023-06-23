@@ -7,9 +7,6 @@ on:
       fly_token:
         required: true
     inputs:
-      app:
-        required: true
-        type: string
       environment:
         required: true
         type: string
@@ -23,6 +20,6 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
         with:
           version: 0.1.40
-      - run: flyctl deploy --remote-only --vm-size=performance-2x -a ${{ inputs.app }}-${{ inputs.environment}} -c vendor/fly/fly-${{ inputs.environment }}.toml
+      - run: flyctl deploy --remote-only --vm-size=performance-2x -c vendor/fly/fly-${{ inputs.environment }}.toml
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
