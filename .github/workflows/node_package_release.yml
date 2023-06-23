@@ -69,7 +69,11 @@ jobs:
             -f previous_tag_name='v${{ steps.previous-version-label.outputs.previous_version }}' \
             | jq -r ".body"
           }
-          echo "changelog=$(generate)" >> $GITHUB_OUTPUT
+
+          # The following is to support multiline with GITHUB_OUTPUT, see https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$(generate)" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Update CHANGELOG.md
         run: |
