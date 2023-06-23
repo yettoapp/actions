@@ -22,6 +22,7 @@ runs:
     - uses: yettoapp/actions/setup-languages@main
       with:
         node: true
+        registry-url: https://registry.npmjs.org/
 
     - name: Run tests
       shell: bash
