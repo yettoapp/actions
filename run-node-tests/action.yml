@@ -1,0 +1,31 @@
+---
+name: "Run the test suite"
+description: "Based on the provided inputs, sets up the language environment dependencies and runs a test suite."
+inputs:
+  node:
+    description: "Set up Node environment"
+    default: "false"
+  github_token:
+    description: "The token used when calling GitHub API"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - if: "contains(github.event.head_commit.message, '[skip test]')"
+      name: Skip build
+      shell: bash
+      run: |
+        echo "Skipping test build because commit message contains `[skip test]`"
+        exit 0
+
+    - uses: yettoapp/actions/setup-languages@main
+      with:
+        node: true
+
+    - name: Run tests
+      shell: bash
+      run: |
+        npm test
+      env:
+        COVERAGE: "1"
