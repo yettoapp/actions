@@ -83,20 +83,19 @@ jobs:
           cat CHANGELOG.md >> CHANGELOG.md.tmp
           mv CHANGELOG.md.tmp CHANGELOG.md
 
+      - name: Commit Changelog
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Actions Auto Build"
+          git add -f CHANGELOG.md
+          git commit -m "[auto-docs][skip ci]: update changelog" || true
+
       - name: Push to protected branch
         uses: CasperWA/push-protected@v2
         with:
           token: ${{ secrets.gh_token }}
           branch: main
           unprotect_reviews: true
-
-      - name: Commit & Push Changelog
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "Actions Auto Build"
-          git add -f CHANGELOG.md
-          git commit -m "[auto-docs][skip ci]: update changelog" || true
-          git push
 
       - name: Create tag
         run: |
