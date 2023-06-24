@@ -96,7 +96,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "Actions Auto Build"
           git add -f CHANGELOG.md
-          git commit -m "[auto-docs][skip ci]: update changelog" || true
+          git commit -m "[auto-docs][skip test]: update changelog" || true
 
       - name: Push to protected branch
         uses: CasperWA/push-protected@v2
