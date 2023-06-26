@@ -103,7 +103,6 @@ jobs:
         with:
           token: ${{ secrets.gh_token }}
           branch: main
-          unprotect_reviews: true
 
       - name: Create tag
         run: |
