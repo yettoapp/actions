@@ -16,10 +16,29 @@ jobs:
     name: Deploy app to Fly
     runs-on: ubuntu-latest
     steps:
+      - name: Start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.gh_token }}
+          env: ${{ inputs.target }}
+
       - uses: actions/checkout@v3
+
       - uses: superfly/flyctl-actions/setup-flyctl@master
         with:
           version: 0.1.40
       - run: flyctl deploy --remote-only --vm-size=performance-2x -c vendor/fly/fly-${{ inputs.target }}.toml
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
+
+      - name: update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.gh_token }}
+          status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
