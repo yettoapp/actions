@@ -11,6 +11,9 @@ inputs:
   github_token:
     description: "The token used when calling GitHub API"
     required: true
+  system_tests:
+    description: "Run system tests"
+    default: "false"
 
 runs:
   using: "composite"
