@@ -10,6 +10,10 @@ on:
       target:
         required: true
         type: string
+      forced:
+        required: false
+        default: ""
+        type: string
 
 jobs:
   deploy:
@@ -17,12 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Start deployment
-        uses: bobheadxi/deployments@v1
+        uses: gjtorikian/deployments@support-more-deployments-logic
         id: deployment
         with:
           step: start
           token: ${{ secrets.gh_token }}
           env: ${{ inputs.target }}
+          auto_merge: true
+          required_contexts: ${{ inputs.forced == 'null' && 'null' || inputs.forced }}
 
       - uses: actions/checkout@v3
 
@@ -34,7 +40,7 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
 
       - name: update deployment status
-        uses: bobheadxi/deployments@v1
+        uses: gjtorikian/deployments@support-more-deployments-logic
         if: always()
         with:
           step: finish
