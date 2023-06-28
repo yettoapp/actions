@@ -12,8 +12,8 @@ on:
         type: string
       forced:
         required: false
-        default: ""
-        type: string
+        default: false
+        type: boolean
 
 jobs:
   deploy:
@@ -29,7 +29,7 @@ jobs:
           env: ${{ inputs.target }}
           auto_merge: true
           debug: true
-          required_contexts: ${{ inputs.forced == 'null' && 'null' || inputs.forced }}
+          required_contexts: ${{ inputs.forced == 'true' && '<<EMPTY>>' }}
 
       - uses: actions/checkout@v3
 
