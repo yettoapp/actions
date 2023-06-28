@@ -29,7 +29,7 @@ jobs:
           env: ${{ inputs.target }}
           auto_merge: true
           debug: true
-          required_contexts: ${{ inputs.forced == true && '<<EMPTY>>' }}
+          required_contexts: ${{ inputs.forced == true && '' }}
 
       - uses: actions/checkout@v3
 
