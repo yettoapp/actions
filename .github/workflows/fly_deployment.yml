@@ -28,7 +28,7 @@ jobs:
           token: ${{ secrets.gh_token }}
           env: ${{ inputs.target }}
           auto_merge: true
-          required_contexts: ${{ inputs.forced == true && '[]' || '' }}
+          # required_contexts: ${{ inputs.forced == true && '[]' || '' }}
 
       - uses: actions/checkout@v3
 
