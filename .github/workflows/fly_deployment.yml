@@ -28,6 +28,7 @@ jobs:
           github-token: ${{ secrets.gh_token }}
           script:
             | # FIXME: `required_contexts` are always off, because it seems to conflict with GH actions; https://github.com/yettoapp/yetto/actions/runs/5417564599
+            let forced = ${{ inputs.forced == true }}
             let opts = {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -35,7 +36,7 @@ jobs:
               environment: "${{ inputs.target}}",
               production_environment: ${{ inputs.target == 'production' }},
               transient_environment: ${{ inputs.target == 'staging' }},
-              auto_merge: true,
+              auto_merge: !forced,
               description: "Release deployment",
               required_contexts: []
             };
