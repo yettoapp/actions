@@ -65,7 +65,7 @@ jobs:
       - name: Get previous version
         id: previous-version-label
         run: |
-          PREVIOUS_VERSION=$(gh api "/repos/${{ github.repository }}/tags?per_page=1" | jq -r '.[] | .name')
+          PREVIOUS_VERSION=$(gh api "/repos/${{ github.repository }}/tags?per_page=1" | jq -r '.[] | .name?')
           echo "previous_version=${PREVIOUS_VERSION}" >> $GITHUB_OUTPUT
 
       - name: Generate Release Notes
