@@ -14,6 +14,13 @@ inputs:
   node-version:
     description: "Node version to use"
     default: "18"
+  deno:
+    description: "Set up Deno environment"
+    default: "false"
+  deno-version:
+    description: "Deno version to use"
+    default: "v1.x"
+
 runs:
   using: "composite"
   steps:
@@ -40,3 +47,8 @@ runs:
       shell: bash
       run: |
         npm ci --ignore-scripts --no-audit --no-progress --prefer-offline
+
+    - uses: denoland/setup-deno@v1
+      if: ${{ inputs.deno == 'true' }}
+      with:
+        deno-version: ${{ inputs.deno-version }}
