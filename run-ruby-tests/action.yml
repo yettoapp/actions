@@ -74,6 +74,7 @@ runs:
         echo "report<<EOF"$'\n'"$coverage_report"$'\n'EOF >> $GITHUB_OUTPUT
 
     - uses: mshick/add-pr-comment@v2
+      if: "${{ steps.coverage_report.outputs.report != '' }}"
       with:
         message: |
           <!-- type: code_coverage -->
@@ -81,5 +82,5 @@ runs:
 
           ```
            ${{ steps.coverage_report.outputs.report }}
-          ````
+          ```
         repo-token: ${{ inputs.github_token }}
