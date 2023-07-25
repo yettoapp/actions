@@ -3,7 +3,7 @@ name: Security
 on:
   workflow_call:
     secrets:
-      token:
+      gh_token:
         required: true
 
 permissions:
@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
 
       - name: Set up Ruby
         uses: yettoapp/actions/setup-languages@main
@@ -30,13 +33,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
 
       - uses: yettoapp/actions/pr-contains-files@main
         id: pr_contains_rb
         with:
           pr_number: ${{ github.event.number }}
           pattern: ".rb$|erb$"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.gh_token }}
 
       - name: Set up Ruby
         if: ${{ steps.pr_contains_rb.outputs.exists == 'true' }}
