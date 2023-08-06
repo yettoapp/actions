@@ -134,7 +134,7 @@ jobs:
           chmod 0600 $HOME/.gem/credentials
           printf -- "---\n:rubygems_api_key: ${{ secrets.rubygems_api_key }}\n" > $HOME/.gem/credentials
           bundle exec rake package
-          for gem in pkg/${{ inputs.gem_name }}-${{ needs.release.outputs.version }}*.gem ; do
+          for gem in pkg/${{ inputs.gem_name }}-${{ needs.release.outputs.version }}.gem ; do
             gem push "$gem" --host https://rubygems.org
           done
 
