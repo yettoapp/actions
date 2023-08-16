@@ -78,7 +78,7 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /repos/${{ github.repository }}/releases/generate-notes \
             -f tag_name='v${{ steps.version-label.outputs.version }}' \
-            -f previous_tag_name='v${{ steps.previous-version-label.outputs.previous_version }}' \
+            -f previous_tag='v${{ steps.previous-version-label.outputs.previous_version }}' \
             | jq -r ".body"
           }
           echo "changelog=$(generate)" >> $GITHUB_OUTPUT
