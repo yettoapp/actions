@@ -81,7 +81,7 @@ jobs:
             -f previous_tag='v${{ steps.previous-version-label.outputs.previous_version }}' \
             | jq -r ".body"
           }
-          echo "changelog=$(generate)" >> $GITHUB_OUTPUT
+          echo "changelog<<EOF"$'\n'"$(generate)"$'\n'EOF >> $GITHUB_OUTPUT
 
       - name: Update CHANGELOG.md
         run: |
