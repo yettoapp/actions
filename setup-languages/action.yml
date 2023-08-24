@@ -46,7 +46,7 @@ runs:
       if: ${{ inputs.node == 'true' }}
       shell: bash
       run: |
-        npm ci --ignore-scripts --no-audit --no-progress --prefer-offline
+        npm ci --no-audit --no-progress --prefer-offline
 
     - uses: denoland/setup-deno@v1
       if: ${{ inputs.deno == 'true' }}
