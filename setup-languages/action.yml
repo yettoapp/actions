@@ -1,28 +1,28 @@
 ---
-name: "Sets up language needs"
-description: "Based on the provided inputs, sets up the language environment dependencies"
+name: 'Sets up language needs'
+description: 'Based on the provided inputs, sets up the language environment dependencies'
 inputs:
   ruby:
-    description: "Set up Ruby environment"
-    default: "false"
+    description: 'Set up Ruby environment'
+    default: 'false'
   ruby-version:
-    description: "Ruby version to use"
-    default: "default"
+    description: 'Ruby version to use'
+    default: 'default'
   node:
-    description: "Set up Node environment"
-    default: "false"
+    description: 'Set up Node environment'
+    default: 'false'
   node-version:
-    description: "Node version to use"
-    default: "18"
+    description: 'Node version to use'
+    default: '18'
   deno:
-    description: "Set up Deno environment"
-    default: "false"
+    description: 'Set up Deno environment'
+    default: 'false'
   deno-version:
-    description: "Deno version to use"
-    default: "v1.x"
+    description: 'Deno version to use'
+    default: 'v1.x'
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - uses: ruby/setup-ruby@v1
       if: ${{ inputs.ruby == 'true' }}
@@ -32,7 +32,7 @@ runs:
         rubygems: latest
       env:
         RAILS_ENV: test
-        BUNDLE_WITH: "ci"
+        BUNDLE_WITH: 'ci'
 
     - name: Install Node
       uses: actions/setup-node@v3
@@ -40,13 +40,13 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         registry-url: https://registry.npmjs.org/
-        cache: "npm"
+        cache: 'npm'
 
     - name: Install npm dependencies
       if: ${{ inputs.node == 'true' }}
       shell: bash
       run: |
-        npm ci --no-audit --no-progress --prefer-offline
+        npm ci
 
     - uses: denoland/setup-deno@v1
       if: ${{ inputs.deno == 'true' }}
