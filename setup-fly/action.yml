@@ -11,4 +11,4 @@ runs:
   steps:
     - uses: superfly/flyctl-actions/setup-flyctl@master
       with:
-        flyctl-version: ${{ inputs.flyctl-version }}
+        version: ${{ inputs.flyctl-version }}
