@@ -2,7 +2,7 @@
 name: "Sets up whatever Fly needs"
 description: "Based on the provided inputs, sets up the Fly CLIs"
 inputs:
-  version:
+  flyctl-version:
     description: "Set Fly version"
     default: 0.1.84
 
@@ -11,4 +11,4 @@ runs:
   steps:
     - uses: superfly/flyctl-actions/setup-flyctl@master
       with:
-        version: ${{ inputs.ruby-version }}
+        flyctl-version: ${{ inputs.flyctl-version }}
