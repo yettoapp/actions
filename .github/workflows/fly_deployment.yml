@@ -54,9 +54,8 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-        with:
-          version: 0.1.40
+      - uses: yettoapp/actions/setup-fly@main
+
       - run: flyctl deploy --remote-only --vm-size=performance-2x -c vendor/fly/fly-${{ inputs.target }}.toml
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
