@@ -32,7 +32,7 @@ jobs:
     steps:
       - id: check_services
         run: |
-          echo "setup_postgresql_and_redis=${{ github.event.inputs.setup_postgresql_and_redis }}" >> $GITHUB_OUTPUT
+          echo "setup_postgresql_and_redis=${{ inputs.setup_postgresql_and_redis }}" >> $GITHUB_OUTPUT
 
   run_with_postgres_and_redis:
     if: inputs.setup_postgresql_and_redis == 'true'
