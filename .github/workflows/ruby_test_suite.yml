@@ -48,6 +48,7 @@ jobs:
       labels: ubuntu-latest-m
     needs: test
     if: ${{ inputs.setup_postgresql_and_redis == true }}
+    timeout-minutes: 10
 
     env:
       POSTGRES_HOST: localhost
@@ -104,6 +105,7 @@ jobs:
       labels: ubuntu-latest-m
     needs: test
     if: ${{ inputs.setup_postgresql_and_redis == false }}
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
