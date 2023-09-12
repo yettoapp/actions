@@ -1,0 +1,29 @@
+name: Test Docker build
+
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+      fly_token:
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest-m
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - uses: yettoapp/actions/setup-fly@main
+
+      - name: Build production Dockerfile
+        run: flyctl deploy --remote-only --build-only -a yetto-production -c vendor/fly/fly-production.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_PRODUCTION_API_TOKEN }}
