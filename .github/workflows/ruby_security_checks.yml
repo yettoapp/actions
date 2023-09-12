@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   bundle-audit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,7 +30,7 @@ jobs:
           bundle exec bundle-audit check --update
 
   brakeman: # A static analysis security vulnerability scanner for Ruby on Rails applications
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - uses: actions/checkout@v4
         with:

@@ -38,12 +38,6 @@ runs:
         sudo apt-get -yqq install libpq-dev
         bundle exec rake db:test:prepare
 
-    - if: ${{ env.DATABASE_URL }}
-      name: Set up the Rails assets
-      shell: bash
-      run: |
-        bundle exec rake assets:precompile
-
     - name: Run tests
       shell: bash
       run: |
