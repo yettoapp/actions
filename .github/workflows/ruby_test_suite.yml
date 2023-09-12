@@ -1,0 +1,98 @@
+name: Runs a Ruby test suite
+
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+    inputs:
+      setup_postgresql_and_redis:
+        required: false
+        type: boolean
+        default: false
+      node:
+        required: false
+        type: boolean
+        default: false
+      system_tests:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest-m
+    outputs:
+      setup_postgresql_and_redis: ${{ steps.check_services.outputs.setup_postgresql_and_redis }}
+
+    steps:
+      - id: check_services
+        run: |
+          echo "setup_postgresql_and_redis=${{ github.event.inputs.setup_postgresql_and_redis }}" >> $GITHUB_OUTPUT
+
+  run_with_postgres_and_redis:
+    if: inputs.setup_postgresql_and_redis == 'true'
+    needs: test
+
+    # Service containers to run; note that this is duplicated
+    # in sorbet.yml due to a limitation in GitHub Actions
+    # (services can only be defined per job)
+    services:
+      postgres:
+        # Docker Hub image name
+        image: postgres:15 # POSTGRES_VERSION
+        # The postgres container requires the postgres user to be setup with a password in order to start it due to security
+        # reasons. It also can't read from the env var above for some reason
+        env:
+          PGUSER: "${{ env.POSTGRES_USER }}"
+          POSTGRES_USER: "${{ env.POSTGRES_USER }}"
+          POSTGRES_PASSWORD: "${{ env.POSTGRES_PASSWORD }}"
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd 'pg_isready' --health-interval 10s --health-timeout 5s --health-retries 5
+        # Maps tcp port 5432 on service container to the host
+        ports: ["5432:5432"]
+      redis:
+        # Docker Hub image name
+        image: redis:6.2-alpine
+        ports: ["6379:6379"]
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout
+          5s --health-retries 5
+
+    runs-on: ubuntu-latest-m
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - uses: yettoapp/actions/run-ruby-tests@main
+        with:
+          github_token: ${{ secrets.gh_token }}
+          node: ${{ inputs.node }}
+          system_tests: ${{ inputs.system_tests }}
+
+  run_without_services:
+    if: inputs.setup_postgresql_and_redis == 'false'
+    needs: test
+
+    runs-on: ubuntu-latest-m
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - uses: yettoapp/actions/run-ruby-tests@main
+        with:
+          github_token: ${{ secrets.gh_token }}
+          node: ${{ inputs.node }}
+          system_tests: ${{ inputs.system_tests }}
