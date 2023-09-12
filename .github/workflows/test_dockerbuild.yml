@@ -29,6 +29,6 @@ jobs:
       - uses: yettoapp/actions/setup-fly@main
 
       - name: Build production Dockerfile
-        run: flyctl deploy --remote-only --build-only -a ${{ inputs.app_name }}-production -c vendor/fly/fly-production.toml
+        run: flyctl deploy --remote-only --build-only -a ${{ inputs.app_name }} -c vendor/fly/fly-production.toml
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
