@@ -10,6 +10,14 @@ on:
         required: false
         type: boolean
         default: false
+      postgres_username:
+        required: false
+        type: string
+        default: ""
+      postgres_database_name:
+        required: false
+        type: string
+        default: ""
       node:
         required: false
         type: boolean
@@ -37,6 +45,17 @@ jobs:
   run_with_postgres_and_redis:
     if: ${{ inputs.setup_postgresql_and_redis == true }}
     needs: test
+
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${{ inputs.postgres_username }}
+      RAILS_ENV: test
+      REDIS_URL: redis://localhost:6379/0
+      DATABASE_URL: "postgresql://${{ inputs.postgres_username }}:postgres@localhost:5432/${{ inputs.postgres_database_name }}"
+      RAILS_MASTER_KEY: supersecret
+      SLACK_LOG_URL: https://slack.com/the_log_room
 
     # Service containers to run; note that this is duplicated
     # in sorbet.yml due to a limitation in GitHub Actions
