@@ -35,7 +35,7 @@ jobs:
           echo "setup_postgresql_and_redis=${{ inputs.setup_postgresql_and_redis }}" >> $GITHUB_OUTPUT
 
   run_with_postgres_and_redis:
-    if: ${{ inputs.setup_postgresql_and_redis == 'true' }}
+    if: ${{ inputs.setup_postgresql_and_redis == true }}
     needs: test
 
     # Service containers to run; note that this is duplicated
@@ -80,7 +80,7 @@ jobs:
           system_tests: ${{ inputs.system_tests }}
 
   run_without_services:
-    if: ${{ inputs.setup_postgresql_and_redis == 'true' }}
+    if: ${{ inputs.setup_postgresql_and_redis == false }}
     needs: test
 
     runs-on: ubuntu-latest-m
