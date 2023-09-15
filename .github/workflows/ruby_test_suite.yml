@@ -81,7 +81,7 @@ jobs:
         ports: ["5432:5432"]
       redis:
         # Docker Hub image name
-        image: redis:6.2-alpine
+        image: redis:7-bookworm
         ports: ["6379:6379"]
         # Set health checks to wait until redis has started
         options: >-
