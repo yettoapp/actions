@@ -32,7 +32,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  test:
+  test_setup:
     runs-on:
       labels: ubuntu-latest-m
     outputs:
@@ -43,10 +43,10 @@ jobs:
         run: |
           echo "setup_postgresql_and_redis=${{ inputs.setup_postgresql_and_redis }}" >> $GITHUB_OUTPUT
 
-  run_with_postgres_and_redis:
+  test_with_postgres_and_redis:
     runs-on:
       labels: ubuntu-latest-m
-    needs: test
+    needs: test_setup
     if: ${{ inputs.setup_postgresql_and_redis == true }}
     timeout-minutes: 10
 
@@ -100,10 +100,10 @@ jobs:
           node: ${{ inputs.node }}
           system_tests: ${{ inputs.system_tests }}
 
-  run_without_services:
+  test_without_services:
     runs-on:
       labels: ubuntu-latest-m
-    needs: test
+    needs: test_setup
     if: ${{ inputs.setup_postgresql_and_redis == false }}
     timeout-minutes: 10
 
