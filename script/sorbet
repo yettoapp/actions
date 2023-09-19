@@ -22,12 +22,12 @@ while [ "$1" != "" ]; do
             bin/rails db:migrate
         fi
 
-        echo "Updating Tapioca RBI files ..."
-        bin/tapioca gem
+        echo "Regenerating Tapioca RBI files ..."
+        bundle exec tapioca gem
+        echo "Generating Tapioca annotations ..."
+        bundle exec tapioca annotations
         echo "Updating Tapioca DSL files ..."
-        bin/tapioca dsl
-        echo "Updating Tapioca TODO files ..."
-        bin/tapioca todo
+        bundle exec tapioca dsl
         ;;
     -v | --verify)
         echo "Verify Sorbet types..."
