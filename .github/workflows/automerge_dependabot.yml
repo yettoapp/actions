@@ -3,6 +3,11 @@ name: "Automerge Dependabot PRs"
 
 on:
   workflow_call:
+    inputs:
+      automerge:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   automerge:
@@ -21,10 +26,18 @@ jobs:
           token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Approve patch and minor updates
-        if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'}}
+        if: ${{inputs.automerge == 'true' && steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'}}
         shell: bash
         run: |
           gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Comment on minor updates of dependencies
+        if: ${{ steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'}}
+        shell: bash
+        run: |
           gh pr review $PR_URL --approve -b "Approving this pull request because it includes a patch or minor update."
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
