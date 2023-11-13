@@ -115,7 +115,6 @@ jobs:
 
   publish:
     needs: release
-    if: ${{ inputs.multiplatform == false && inputs.oxidized == false }}
     runs-on: ubuntu-latest
 
     steps:
