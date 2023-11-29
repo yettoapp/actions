@@ -14,6 +14,10 @@ on:
         required: false
         default: false
         type: boolean
+      with_aws:
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   deploy:
@@ -56,9 +60,19 @@ jobs:
 
       - uses: yettoapp/actions/setup-fly@main
 
+      - name: configure_aws
+        if: ${{ inputs.with_aws == true }}
+        run: |
+          mkdir .aws
+          echo [default] >> .aws_credentials
+          echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID >> .aws_credentials
+          echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY >> .aws_credentials
+          echo AWS_REGION=$AWS_REGION >> .aws_credentials
+
       - run: flyctl deploy --remote-only --vm-size=performance-2x -c vendor/fly/fly-${{ inputs.target }}.toml
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
+          RAILS_ENV: ${{ inputs.target }}
 
       - name: update deployment status
         uses: actions/github-script@v7
