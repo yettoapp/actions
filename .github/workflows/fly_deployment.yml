@@ -6,6 +6,10 @@ on:
         required: true
       fly_token:
         required: true
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
     inputs:
       target:
         required: true
@@ -60,7 +64,13 @@ jobs:
 
       - uses: yettoapp/actions/setup-fly@main
 
-      - run: flyctl deploy --remote-only ${{inputs.fly_args}} -c vendor/fly/fly-${{ inputs.target }}.toml
+      - run: |
+          flyctl deploy --remote-only \
+          --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+          --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+          ${{ inputs.fly_args }} \
+          -c vendor/fly/fly-${{ inputs.target }}.toml
+          ;
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
           RAILS_ENV: ${{ inputs.target }}
