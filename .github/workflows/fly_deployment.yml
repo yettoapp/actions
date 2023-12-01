@@ -70,7 +70,6 @@ jobs:
           --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           ${{ inputs.fly_args }} \
           -c vendor/fly/fly-${{ inputs.target }}.toml
-          ;
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
           RAILS_ENV: ${{ inputs.target }}
