@@ -66,6 +66,7 @@ jobs:
 
       - run: |
           flyctl deploy --remote-only \
+          --vm-size=${{ inputs.target == 'production' && 'performance-2x' || 'shared-cpu-2x' }} \
           --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
           --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           ${{ inputs.fly_args }} \
