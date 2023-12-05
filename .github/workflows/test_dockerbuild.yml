@@ -7,10 +7,18 @@ on:
         required: true
       fly_token:
         required: true
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
     inputs:
       app_name:
         description: "Name of the app to deploy"
         required: true
+        type: string
+      fly_args:
+        required: false
+        default: ""
         type: string
 
 permissions:
@@ -29,6 +37,13 @@ jobs:
       - uses: yettoapp/actions/setup-fly@main
 
       - name: Build production Dockerfile
-        run: flyctl deploy --remote-only --build-only -a ${{ inputs.app_name }} -c vendor/fly/fly-production.toml
+        run: |
+          flyctl deploy --remote-only --build-only \
+          -a ${{ inputs.app_name }} \
+          --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+          --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+          ${{ inputs.fly_args }} \
+          -c vendor/fly/fly-production.toml \
+
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
