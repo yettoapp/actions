@@ -74,7 +74,6 @@ jobs:
           --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
           --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           --build-arg HONEYCOMB_API_KEY=${{ secrets.HONEYCOMB_API_KEY }} \
-          --build-arg OTEL_SERVICE_NAME=${{ secrets.OTEL_SERVICE_NAME }} \
           ${{ inputs.fly_args }} \
           -c vendor/fly/fly-${{ inputs.target }}.toml
         env:
