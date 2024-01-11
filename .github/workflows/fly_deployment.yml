@@ -12,7 +12,7 @@ on:
         required: false
       HONEYCOMB_API_KEY:
         required: false
-      OTEL_SERVICE_NAME:
+      FLY_METRICS_TOKEN:
         required: false
     inputs:
       target:
