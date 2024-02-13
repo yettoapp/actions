@@ -34,7 +34,7 @@ permissions:
 jobs:
   test_setup:
     runs-on:
-      labels: ubuntu-latest-m
+      labels: Ubuntu-TestRunner
     outputs:
       setup_postgresql_and_redis: ${{ steps.check_services.outputs.setup_postgresql_and_redis }}
 
@@ -45,7 +45,7 @@ jobs:
 
   test_with_postgres_and_redis:
     runs-on:
-      labels: ubuntu-latest-m
+      labels: Ubuntu-TestRunner
     needs: test_setup
     if: ${{ inputs.setup_postgresql_and_redis == true }}
     timeout-minutes: 10
@@ -102,7 +102,7 @@ jobs:
 
   test_without_services:
     runs-on:
-      labels: ubuntu-latest-m
+      labels: Ubuntu-TestRunner
     needs: test_setup
     if: ${{ inputs.setup_postgresql_and_redis == false }}
     timeout-minutes: 10
