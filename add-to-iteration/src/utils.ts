@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import type { DocumentNode } from 'graphql/language/ast';
+import type { DocumentNode } from 'graphql/language/ast'
 
 export interface ActionInputs {
   projectNumber: number
@@ -29,7 +29,7 @@ export function gatherInputs(): ActionInputs {
     core.getInput('', actionOptions)
   )
   const owner = core.getInput('owner', actionOptions)
-  const iterFieldName = core.getInput("iterFieldName", actionOptions)
+  const iterFieldName = core.getInput('iterFieldName', actionOptions)
   const token = core.getInput('ghToken', actionOptions)
 
   return {

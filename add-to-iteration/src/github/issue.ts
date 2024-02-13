@@ -25,7 +25,7 @@ export async function handleIssue(
     iterFieldName,
   })
 
-  if (!org.projectV2?.id || !org.projectV2?.field?.id) {
+  if (!org.projectV2?.id || !org.projectV2?.field?.id || !org.projectV2.field) {
     throw new Error("The Inputs did not return a project or iterfield")
   }
 
