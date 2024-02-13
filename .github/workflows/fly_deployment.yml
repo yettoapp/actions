@@ -30,7 +30,7 @@ on:
 jobs:
   deploy:
     name: Fly
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - name: Start deployment
         id: deployment
