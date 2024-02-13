@@ -4,8 +4,7 @@ const config: CodegenConfig = {
   overwrite: true,
   schema: "src/generated/github-schema-loader.ts",
   documents: [
-    "src/graphql/queries/*.graphql",
-    "src/graphql/mutations/*.graphql",
+    "**/*.graphql",
   ],
   generates: {
     "src/generated/graphql.ts": {

@@ -3,7 +3,7 @@ import { PullRequestClosedEvent } from '@octokit/webhooks-definitions/schema'
 import {
   GetProjectAndFieldByNumber,
   AddItemToProject,
-  UpdateIterFieldValue
+  UpdateIterFieldValueOnItem
 } from 'src/generated/graphql';
 import { Organization, AddProjectV2ItemByIdPayload, UpdateProjectV2ItemFieldValuePayload } from "@octokit/graphql-schema";
 import { parseGqlQuery } from 'src/utils';
@@ -17,7 +17,7 @@ export async function handlePr(
 ): Promise<void> {
   const getProjectInfoQuery = parseGqlQuery(GetProjectAndFieldByNumber)
   const addIssueToProjectMutation = parseGqlQuery(AddItemToProject)
-  const updateIterFieldValueMutation = parseGqlQuery(UpdateIterFieldValue)
+  const updateIterFieldValueMutation = parseGqlQuery(UpdateIterFieldValueOnItem)
 
   const org = await client.graphql<Organization>(getProjectInfoQuery, {
     projectNumber,

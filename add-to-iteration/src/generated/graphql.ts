@@ -43473,8 +43473,8 @@ export const AddItemToProject = gql`
   }
 }
     `;
-export const UpdateIterFieldValue = gql`
-    mutation UpdateIterFieldValue($item: UpdateProjectV2ItemFieldValueInput!) {
+export const UpdateIterFieldValueOnItem = gql`
+    mutation UpdateIterFieldValueOnItem($item: UpdateProjectV2ItemFieldValueInput!) {
   updateProjectV2ItemFieldValue(input: $item) {
     projectV2Item {
       id
@@ -43511,12 +43511,12 @@ export type AddItemToProjectMutationVariables = Exact<{
 
 export type AddItemToProjectMutation = { __typename?: 'Mutation', addProjectV2ItemById?: { __typename?: 'AddProjectV2ItemByIdPayload', item?: { __typename?: 'ProjectV2Item', id: string } | null } | null };
 
-export type UpdateIterFieldValueMutationVariables = Exact<{
+export type UpdateIterFieldValueOnItemMutationVariables = Exact<{
   item: UpdateProjectV2ItemFieldValueInput;
 }>;
 
 
-export type UpdateIterFieldValueMutation = { __typename?: 'Mutation', updateProjectV2ItemFieldValue?: { __typename?: 'UpdateProjectV2ItemFieldValuePayload', projectV2Item?: { __typename?: 'ProjectV2Item', id: string } | null } | null };
+export type UpdateIterFieldValueOnItemMutation = { __typename?: 'Mutation', updateProjectV2ItemFieldValue?: { __typename?: 'UpdateProjectV2ItemFieldValuePayload', projectV2Item?: { __typename?: 'ProjectV2Item', id: string } | null } | null };
 
 export type GetProjectAndFieldByNumberQueryVariables = Exact<{
   owner: Scalars['String']['input'];
