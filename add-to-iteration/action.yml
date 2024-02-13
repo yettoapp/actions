@@ -1,0 +1,21 @@
+name: 'Add to Iteration'
+description: "An event based way to automatically add PRs and/or Issues to a project's current iteration"
+author: 'yettoapp'
+
+inputs:
+  projectNumber:
+    description: 'The number of the specific GitHub Project'
+    required: true
+  owner:
+    description: 'The @-mentionable GitHub Handle and/or GitHub Organization name for the project owner'
+    required: true
+  iterFieldName:
+    description: 'The human readable name of the iteration field you want to update to the current value'
+    required: true
+  ghToken:
+    description: 'A GitHub Token with permission to read from Pull Requests and Issues and write to ProjectsV2'
+    required: true
+
+runs:
+  using: node20
+  main: dist/index.js
