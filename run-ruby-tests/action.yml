@@ -31,12 +31,10 @@ runs:
         node: ${{ inputs.node }}
 
     - if: ${{ env.DATABASE_URL }}
-      name: Set up the Rails database
+      name: Set up the database
       shell: bash
       run: |
-        bundle exec rake db:create
-        sudo apt-get -yqq install libpq-dev
-        bundle exec rake db:test:prepare
+        bundle exec rake db:create db:schema:load
 
     - name: Run tests
       shell: bash
