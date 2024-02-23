@@ -29,7 +29,6 @@ runs:
       with:
         bundler-cache: true
         ruby-version: ${{ inputs.ruby-version }}
-        rubygems: latest
       env:
         RAILS_ENV: test
         BUNDLE_WITH: "ci"
