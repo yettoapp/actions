@@ -36,12 +36,29 @@ runs:
       run: |
         bundle exec rake db:create db:schema:load
 
+    - if: ${{ inputs.system_tests == 'true' }}
+      id: cache-assets
+      name: Restore cached Vite assets
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          public/vite-test
+        key: asset-cache-${{ runner.os }}-${{ github.ref }}-${{ github.sha }}
+
     - name: Run tests
       shell: bash
       run: |
         script/ci
       env:
         COVERAGE: "1"
+
+    - name: Cache Vite assets
+      if: ${{ inputs.system_tests == 'true' }}
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          public/vite-test
+        key: asset-cache-${{ runner.os }}-${{ github.ref }}-${{ github.sha }}
 
     - if: ${{ inputs.system_tests == 'true' }}
       name: Run system tests
