@@ -43,7 +43,7 @@ runs:
       with:
         path: |
           public/vite-test
-        key: asset-cache-${{ runner.os }}-${{ github.ref }}-${{ github.sha }}
+        key: asset-cache-${{ runner.os }}
 
     - name: Run tests
       shell: bash
@@ -58,7 +58,7 @@ runs:
       with:
         path: |
           public/vite-test
-        key: asset-cache-${{ runner.os }}-${{ github.ref }}-${{ github.sha }}
+        key: asset-cache-${{ runner.os }}
 
     - if: ${{ inputs.system_tests == 'true' }}
       name: Run system tests
