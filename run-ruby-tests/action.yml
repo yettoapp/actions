@@ -37,13 +37,24 @@ runs:
         bundle exec rake db:create db:schema:load
 
     - if: ${{ inputs.system_tests == 'true' }}
+      name: Get Vite cache restore key
+      id: restored-vite-cache-key
+      shell: bash
+      run: |
+         echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
+
+    - if: ${{ inputs.system_tests == 'true' }}
       id: cache-assets
       name: Restore cached Vite assets
       uses: actions/cache/restore@v4
       with:
         path: |
           public/vite-test
-        key: asset-cache-${{ runner.os }}
+          tmp/cache/vite
+        key: asset-cache-${{ runner.os }}-${{ steps.restored-vite-cache-key.outputs.digest }}
+        restore-keys: |
+          asset-cache-${{ runner.os }}-
+          asset-cache-
 
     - name: Run tests
       shell: bash
@@ -52,13 +63,21 @@ runs:
       env:
         COVERAGE: "1"
 
-    - name: Cache Vite assets
-      if: ${{ inputs.system_tests == 'true' }}
+    - if: ${{ inputs.system_tests == 'true' }}
+      name: Get Vite save restore key
+      id: vite-cache-key
+      shell: bash
+      run: |
+         echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
+
+    - if: ${{ inputs.system_tests == 'true' && steps.vite-cache-key.outputs.digest != steps.restored-vite-cache-key.outputs.digest }}
+      name: Cache Vite assets
       uses: actions/cache/save@v4
       with:
         path: |
           public/vite-test
-        key: asset-cache-${{ runner.os }}
+          tmp/cache/vite
+        key: asset-cache-${{ runner.os }}-${{ steps.vite-cache-key.outputs.digest }}
 
     - if: ${{ inputs.system_tests == 'true' }}
       name: Run system tests
