@@ -2,60 +2,13 @@
 name: "Run the test suite"
 description: "Based on the provided inputs, sets up the language environment dependencies and runs a test suite."
 inputs:
-  ruby-version:
-    description: "Ruby version to use"
-    default: "default"
-  node:
-    description: "Set up Node environment"
-    default: "false"
   github_token:
     description: "The token used when calling GitHub API"
     required: true
-  system_tests:
-    description: "Run system tests"
-    default: "false"
 
 runs:
   using: "composite"
   steps:
-    - if: "contains(github.event.head_commit.message, '[skip test]')"
-      name: Skip build
-      shell: bash
-      run: |
-        echo "Skipping test build because commit message contains `[skip test]`"
-        exit 0
-
-    - uses: yettoapp/actions/setup-languages@main
-      with:
-        ruby: true
-        node: ${{ inputs.node }}
-
-    - if: ${{ env.DATABASE_URL }}
-      name: Set up the database
-      shell: bash
-      run: |
-        bundle exec rake db:create db:schema:load
-
-    - if: ${{ inputs.system_tests == 'true' }}
-      name: Get Vite cache restore key
-      id: restored-vite-cache-key
-      shell: bash
-      run: |
-         echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
-
-    - if: ${{ inputs.system_tests == 'true' }}
-      id: cache-assets
-      name: Restore cached Vite assets
-      uses: actions/cache/restore@v4
-      with:
-        path: |
-          public/vite-test
-          tmp/cache/vite
-        key: asset-cache-${{ runner.os }}-${{ steps.restored-vite-cache-key.outputs.digest }}
-        restore-keys: |
-          asset-cache-${{ runner.os }}-
-          asset-cache-
-
     - name: Run tests
       shell: bash
       run: |
@@ -63,32 +16,9 @@ runs:
       env:
         COVERAGE: "1"
 
-    - if: ${{ inputs.system_tests == 'true' }}
-      name: Get Vite save restore key
-      id: vite-cache-key
-      shell: bash
-      run: |
-         echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
-
-    - if: ${{ inputs.system_tests == 'true' && steps.vite-cache-key.outputs.digest != steps.restored-vite-cache-key.outputs.digest }}
-      name: Cache Vite assets
-      uses: actions/cache/save@v4
-      with:
-        path: |
-          public/vite-test
-          tmp/cache/vite
-        key: asset-cache-${{ runner.os }}-${{ steps.vite-cache-key.outputs.digest }}
-
-    - if: ${{ inputs.system_tests == 'true' }}
-      name: Run system tests
-      shell: bash
-      run: |
-        script/test-system
-
     - name: Install helpers
       shell: bash
       run: |
-        : Install helpers
         echo "$GITHUB_ACTION_PATH/bin" >> $GITHUB_PATH
 
     - name: Post coverage report
