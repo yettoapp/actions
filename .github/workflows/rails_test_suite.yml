@@ -93,10 +93,6 @@ jobs:
         run: |
           bundle exec rails db:create db:schema:load
 
-      - uses: yettoapp/actions/run-ruby-tests@new-rails-order
-        with:
-          github_token: ${{ secrets.gh_token }}
-
       - name: Get Vite cache restore key
         id: restored-vite-cache-key
         shell: bash
@@ -120,20 +116,25 @@ jobs:
         run: |
           bin/rails assets:precompile
 
-      - name: Run system tests
-        id: run-system-tests
+      - uses: yettoapp/actions/run-ruby-tests@new-rails-order
+        with:
+          github_token: ${{ secrets.gh_token }}
+
+      - if: ${{ always() }}
+        name: Get Vite save restore key
+        id: new-vite-cache-key
         shell: bash
         run: |
-          script/test-system
+            echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
 
-      - if: ${{ always() && steps.vite-cache-key.outputs.digest != steps.restored-vite-cache-key.outputs.digest }}
+      - if: ${{ always() && steps.new-vite-cache-key.outputs.digest != steps.restored-vite-cache-key.outputs.digest }}
         name: Cache Vite assets
         uses: actions/cache/save@v4
         with:
           path: |
             public/vite-test
             tmp/cache/vite
-          key: asset-cache-${{ runner.os }}-${{ steps.vite-cache-key.outputs.digest }}
+          key: asset-cache-${{ runner.os }}-${{ steps.new-vite-cache-key.outputs.digest }}
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() && steps.run-system-tests.outcome == 'failure' }}
