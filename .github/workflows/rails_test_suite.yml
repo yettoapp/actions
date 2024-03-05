@@ -117,6 +117,7 @@ jobs:
           bin/rails assets:precompile
 
       - uses: yettoapp/actions/run-ruby-tests@new-rails-order
+        id: run-tests
         with:
           github_token: ${{ secrets.gh_token }}
 
@@ -137,7 +138,7 @@ jobs:
           key: asset-cache-${{ runner.os }}-${{ steps.new-vite-cache-key.outputs.digest }}
 
       - uses: actions/upload-artifact@v3
-        if: ${{ always() && steps.run-system-tests.outcome == 'failure' }}
+        if: ${{ always() && steps.run-tests.outcome == 'failure' }}
         with:
           name: capybara_failure_screenshots
           path: ./tmp/capybara
