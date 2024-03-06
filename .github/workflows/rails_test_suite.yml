@@ -15,7 +15,7 @@ on:
         required: false
         type: string
         default: "app_test"
-      with_system_tests:
+      system_tests:
         required: false
         type: boolean
         default: true
@@ -90,21 +90,21 @@ jobs:
       - uses: yettoapp/actions/setup-languages@main
         with:
           ruby: true
-          node: ${{ inputs.with_system_tests == true }}
+          node: ${{ inputs.system_tests == true }}
 
       - name: Set up the database
         shell: bash
         run: |
           bundle exec rails db:create db:schema:load || echo 'DB could not be created!'
 
-      - if: ${{ inputs.with_system_tests == true }}
+      - if: ${{ inputs.system_tests == true }}
         name: Get Vite cache restore key
         id: restored-vite-cache-key
         shell: bash
         run: |
           echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
 
-      - if: ${{ inputs.with_system_tests == true }}
+      - if: ${{ inputs.system_tests == true }}
         name: Cache assets
         id: cache-assets
         uses: actions/cache/restore@v4
@@ -117,7 +117,7 @@ jobs:
             asset-cache-${{ runner.os }}-
             asset-cache-
 
-      - if: ${{ inputs.with_system_tests == true }}
+      - if: ${{ inputs.system_tests == true }}
         name: Precompile assets
         shell: bash
         run: |
@@ -128,14 +128,14 @@ jobs:
         with:
           github_token: ${{ secrets.gh_token }}
 
-      - if: ${{ always() && inputs.with_system_tests == true }}
+      - if: ${{ always() && inputs.system_tests == true }}
         name: Get Vite save restore key
         id: new-vite-cache-key
         shell: bash
         run: |
             echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
 
-      - if: ${{ always() && inputs.with_system_tests == true && steps.new-vite-cache-key.outputs.digest != steps.restored-vite-cache-key.outputs.digest }}
+      - if: ${{ always() && inputs.system_tests == true && steps.new-vite-cache-key.outputs.digest != steps.restored-vite-cache-key.outputs.digest }}
         name: Cache Vite assets
         uses: actions/cache/save@v4
         with:
@@ -145,7 +145,7 @@ jobs:
           key: asset-cache-${{ runner.os }}-${{ steps.new-vite-cache-key.outputs.digest }}
 
       - uses: actions/upload-artifact@v4
-        if: ${{ always() && inputs.with_system_tests == true && steps.run-tests.outcome == 'failure' }}
+        if: ${{ always() && inputs.system_tests == true && steps.run-tests.outcome == 'failure' }}
         with:
           name: capybara_failure_screenshots
           path: ./tmp/capybara
