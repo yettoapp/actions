@@ -1,0 +1,151 @@
+---
+name: Runs a Rails test suite
+
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+    inputs:
+      postgres_username:
+        required: false
+        type: string
+        default: "app"
+      postgres_database_name:
+        required: false
+        type: string
+        default: "app_test"
+      with_system_tests:
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test_with_postgres_and_redis:
+    runs-on:
+      labels: Ubuntu-TestRunner
+    timeout-minutes: 10
+
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${{ inputs.postgres_username }}
+      RAILS_ENV: test
+      REDIS_URL: redis://localhost:6379/0
+      DATABASE_URL: "postgresql://${{ inputs.postgres_username }}:postgres@localhost:5432/${{ inputs.postgres_database_name }}"
+      RAILS_MASTER_KEY: supersecret
+      SLACK_LOG_URL: https://slack.com/the_log_room
+
+    # Service containers to run; note that this is duplicated
+    # in sorbet.yml due to a limitation in GitHub Actions
+    # (services can only be defined per job)
+    services:
+      postgres:
+        # Docker Hub image name
+        image: postgres:16-bookworm # POSTGRES_VERSION
+        # The postgres container requires the postgres user to be setup with a password in order to start it due to security
+        # reasons. It also can't read from the env var above for some reason
+        env:
+          PGUSER: "${{ env.POSTGRES_USER }}"
+          POSTGRES_USER: "${{ env.POSTGRES_USER }}"
+          POSTGRES_PASSWORD: "${{ env.POSTGRES_PASSWORD }}"
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 8
+        # Maps tcp port 5432 on service container to the host
+        ports: ["5432:5432"]
+
+      redis:
+        # Docker Hub image name
+        image: redis:7-bookworm
+        ports: ["6379:6379"]
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 8
+
+    steps:
+      - if: "contains(github.event.head_commit.message, '[skip test]')"
+        name: Skip test
+        shell: bash
+        run: |
+          echo "Skipping test workflow because commit message contains `[skip test]`"
+          exit 0
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: true
+          node: ${{ inputs.with_system_tests == true }}
+
+      - name: Set up the database
+        shell: bash
+        run: |
+          bundle exec rails db:create db:schema:load || echo 'DB could not be created!'
+
+      - if: ${{ inputs.with_system_tests == true }}
+        name: Get Vite cache restore key
+        id: restored-vite-cache-key
+        shell: bash
+        run: |
+          echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
+
+      - if: ${{ inputs.with_system_tests == true }}
+        name: Cache assets
+        id: cache-assets
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            public/vite-test
+            tmp/cache/vite
+          key: asset-cache-${{ runner.os }}-${{ steps.restored-vite-cache-key.outputs.digest }}
+          restore-keys: |
+            asset-cache-${{ runner.os }}-
+            asset-cache-
+
+      - if: ${{ inputs.with_system_tests == true }}
+        name: Precompile assets
+        shell: bash
+        run: |
+          bin/rails assets:precompile
+
+      - uses: yettoapp/actions/run-ruby-tests@main
+        id: run-tests
+        with:
+          github_token: ${{ secrets.gh_token }}
+
+      - if: ${{ always() && inputs.with_system_tests == true }}
+        name: Get Vite save restore key
+        id: new-vite-cache-key
+        shell: bash
+        run: |
+            echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
+
+      - if: ${{ always() && inputs.with_system_tests == true && steps.new-vite-cache-key.outputs.digest != steps.restored-vite-cache-key.outputs.digest }}
+        name: Cache Vite assets
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            public/vite-test
+            tmp/cache/vite
+          key: asset-cache-${{ runner.os }}-${{ steps.new-vite-cache-key.outputs.digest }}
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && inputs.with_system_tests == true && steps.run-tests.outcome == 'failure' }}
+        with:
+          name: capybara_failure_screenshots
+          path: ./tmp/capybara
