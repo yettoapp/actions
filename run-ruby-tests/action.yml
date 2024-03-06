@@ -1,6 +1,6 @@
 ---
 name: "Run the test suite"
-description: "Based on the provided inputs, sets up the language environment dependencies and runs a test suite."
+description: "Runs the test suite for Ruby apps."
 inputs:
   github_token:
     description: "The token used when calling GitHub API"
