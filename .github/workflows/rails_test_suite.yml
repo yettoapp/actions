@@ -123,7 +123,7 @@ jobs:
         run: |
           bin/rails assets:precompile
 
-      - uses: yettoapp/actions/run-ruby-tests@new-rails-order
+      - uses: yettoapp/actions/run-ruby-tests@main
         id: run-tests
         with:
           github_token: ${{ secrets.gh_token }}
