@@ -133,7 +133,7 @@ jobs:
         id: new-vite-cache-key
         shell: bash
         run: |
-            echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
+          echo "digest=$(bin/rails r 'print ViteRuby.digest')" >> $GITHUB_OUTPUT
 
       - if: ${{ always() && inputs.system_tests == true && steps.new-vite-cache-key.outputs.digest != steps.restored-vite-cache-key.outputs.digest }}
         name: Cache Vite assets
