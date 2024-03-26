@@ -1,0 +1,40 @@
+---
+name: Runs a Ruby test suite
+
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on:
+      labels: Ubuntu-TestRunner
+    timeout-minutes: 10
+
+    steps:
+      - if: "contains(github.event.head_commit.message, '[skip test]')"
+        name: Skip test
+        shell: bash
+        run: |
+          echo "Skipping test workflow because commit message contains `[skip test]`"
+          exit 0
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: true
+
+      - uses: yettoapp/actions/run-ruby-tests@main
+        id: run-tests
+        with:
+          github_token: ${{ secrets.gh_token }}
