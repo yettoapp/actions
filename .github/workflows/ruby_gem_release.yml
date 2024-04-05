@@ -129,6 +129,9 @@ jobs:
           ruby: true
           node: ${{ inputs.requires_node }}
 
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+
       - name: Publish to RubyGems
         run: |
           mkdir -p $HOME/.gem
