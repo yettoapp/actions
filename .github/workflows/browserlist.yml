@@ -5,6 +5,11 @@ on:
     secrets:
       gh_token:
         required: true
+    inputs:
+      ruby: # some projects, like Ariadne, require Ruby to be set up
+        description: "Set up Ruby environment"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -20,6 +25,7 @@ jobs:
 
       - uses: yettoapp/actions/setup-languages@main
         with:
+          ruby: ${{ inputs.ruby }}
           node: true
 
       - run: npx update-browserslist-db@latest
