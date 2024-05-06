@@ -26,6 +26,14 @@ on:
       version_filepath:
         required: true
         type: string
+      labeled:
+        required: false
+        default: false
+        type: boolean
+      release:
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -36,21 +44,12 @@ env:
   LATEST_RUBY_VERSION: "3.3"
 
 jobs:
-  release:
-    env:
-      GITHUB_TOKEN: ${{ secrets.gh_token }}
+  prepare:
+    if: ${{ inputs.labeled }}
     runs-on: ubuntu-latest
-
-    outputs:
-      version: ${{ steps.version-label.outputs.version }}
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: yettoapp/actions/setup-languages@main
-        with:
-          ruby: true
 
       - name: Configure Git
         run: |
@@ -97,13 +96,40 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "Actions Auto Build"
           git add -f CHANGELOG.md
-          git commit -m "[auto-docs][skip test]: update changelog" || true
 
-      - name: Push to protected branch
-        uses: CasperWA/push-protected@v2
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "[auto-docs][skip test]: update changelog"
+          title: "Release v${{ steps.version-label.outputs.version }}"
+          body: |
+            This is an automated PR to build the latest changelog.
+          delete-branch: true
+
+      - name: Enable Pull Request Automerge
+        uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.gh_token }}
-          branch: main
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+
+  release:
+    if: ${{ inputs.release }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.gh_token }}
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.version-label.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get current version
+        id: version-label
+        run: |
+          VERSION=$(grep VERSION ${{ inputs.version_filepath }} | head -n 1 | cut -d'"' -f2)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Create tag
         run: |
