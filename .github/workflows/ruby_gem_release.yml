@@ -26,7 +26,7 @@ on:
       version_filepath:
         required: true
         type: string
-      labeled:
+      prepare:
         required: false
         default: false
         type: boolean
@@ -45,7 +45,7 @@ env:
 
 jobs:
   prepare:
-    if: ${{ inputs.labeled == true }}
+    if: ${{ inputs.prepare }}
     runs-on: ubuntu-latest
 
     steps:
@@ -107,6 +107,7 @@ jobs:
             This is an automated PR to build the latest changelog. Upon merge,
             a new release will be created and published to RubyGems.
           delete-branch: true
+          labels: release
 
       - name: Enable Pull Request Automerge
         uses: peter-evans/enable-pull-request-automerge@v3
@@ -115,7 +116,7 @@ jobs:
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
 
   release:
-    if: ${{ inputs.release == true }}
+    if: ${{ inputs.release }}
     env:
       GITHUB_TOKEN: ${{ secrets.gh_token }}
     runs-on: ubuntu-latest
