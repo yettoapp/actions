@@ -45,6 +45,8 @@ env:
 
 jobs:
   prepare:
+    env:
+      GITHUB_TOKEN: ${{ secrets.gh_token }}
     if: ${{ inputs.prepare }}
     runs-on: ubuntu-latest
 
@@ -103,7 +105,7 @@ jobs:
         with:
           commit-message: "[skip test] update changelog"
           title: "Release: v${{ steps.version-label.outputs.version }}"
-          body: |
+          body: >
             This is an automated PR to build the latest changelog. Upon merge,
             a new release will be created and published to RubyGems.
           delete-branch: true
