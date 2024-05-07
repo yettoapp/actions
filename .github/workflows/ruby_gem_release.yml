@@ -104,9 +104,9 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "[skip test] update changelog"
-          title: "Release: v${{ steps.version-label.outputs.version }}"
+          title: "[skip test] Release v${{ steps.version-label.outputs.version }}"
           body: >
-            This is an automated PR to build the latest changelog. Upon merge,
+            This is an automated PR to build the latest changelog. Upon merging,
             a new release will be created and published to RubyGems.
           delete-branch: true
           labels: release
