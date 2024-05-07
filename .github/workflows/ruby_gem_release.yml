@@ -94,10 +94,7 @@ jobs:
           mv CHANGELOG.md.tmp CHANGELOG.md
 
       - name: Commit Changelog
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "Actions Auto Build"
-          git add -f CHANGELOG.md
+        run: git add -f CHANGELOG.md
 
       - name: Create Pull Request
         id: cpr
