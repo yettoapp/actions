@@ -45,7 +45,7 @@ env:
 
 jobs:
   prepare:
-    if: ${{ inputs.labeled }}
+    if: ${{ inputs.labeled == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -115,7 +115,7 @@ jobs:
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
 
   release:
-    if: ${{ inputs.release }}
+    if: ${{ inputs.release == true }}
     env:
       GITHUB_TOKEN: ${{ secrets.gh_token }}
     runs-on: ubuntu-latest
