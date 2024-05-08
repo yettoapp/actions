@@ -87,7 +87,7 @@ jobs:
 
       - name: Update CHANGELOG.md
         run: |
-          echo "# [v${{ steps.version-label.outputs.version }}] - `date +%d-%m-%Y`\n" >> CHANGELOG.md.tmp
+          echo "# [v${{ steps.version-label.outputs.version }}] - `date +%d-%m-%Y`" >> CHANGELOG.md.tmp
           echo "${{steps.generate-release-notes.outputs.changelog}}" >> CHANGELOG.md.tmp
           echo '-n' >> CHANGELOG.md
           cat CHANGELOG.md >> CHANGELOG.md.tmp
