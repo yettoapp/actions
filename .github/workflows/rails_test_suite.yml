@@ -123,6 +123,9 @@ jobs:
         run: |
           bin/rails assets:precompile
 
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+
       - uses: yettoapp/actions/run-ruby-tests@main
         id: run-tests
         with:
