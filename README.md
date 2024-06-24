@@ -19,3 +19,4 @@ You can find more information about the specific inputs and outputs of each work
 - _run-ruby-tests_: Runs Ruby test suites
 - _run-sorbet-update_: Updates any Sorbet definitions
 - _setup-languages_: Sets up language definitions
+- _send-honeycomb-marker_: Create a Honeycomb Marker of any type in a specified dataset
