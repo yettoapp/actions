@@ -1,0 +1,7 @@
+mutation UpdateIterFieldValueOnItem($item: UpdateProjectV2ItemFieldValueInput!) {
+  updateProjectV2ItemFieldValue(input: $item) {
+    projectV2Item {
+      id
+    }
+  }
+}
