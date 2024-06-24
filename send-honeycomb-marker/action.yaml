@@ -1,0 +1,45 @@
+name: "Send Honeycomb Marker"
+description: "Create a Honeycomb Marker of any type in a specified dataset"
+inputs:
+  honeycombApiKey:
+    description: "The API key to use for the Honeycomb API call"
+    required: true
+  dataset:
+    description: "The Honeycomb Dataset to associate this marker with"
+    required: true
+  type:
+    description: "The type of marker it is (e.g. 'deploy')"
+    required: true
+  message:
+    description: "The message you'd like added to the marker (will be preceeded by the GitHub Actions run ID and job status)"
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Get Pull Request URL
+      shell: bash
+      id: get-pr-url
+      run: |
+        echo 'URL="$(gh api /repos/${{ github.repository }}/commits/${{ github.sha }}/pulls --jq ".[1].html_url")"' >> $GITHUB_OUTPUT
+    - name: Build Payload with jq
+      id: honeycomb-payload
+      shell: bash
+      env:
+        PR_URL: ${{ steps.get-pr-url.outputs.URL }}
+      run: |
+        HONEYCOMB_PAYLOAD="$(jq -nc \
+          --arg prUrl "$PR_URL" \
+          --arg message "[${{ github.run-id }}-${{ job.status }}] ${{ inputs.message }}" \
+          --arg type "${{ inputs.type }}" \
+          '{ \"type\": $type, "\message\": $message, \"url\": $url  }')"
+        echo 'PAYLOAD="$HONEYCOMB_PAYLOAD"' >> $GITHUB_OUTPUT
+    - name: Send Marker to honeycomb
+      shell: bash
+      env:
+        PAYLOAD: ${{ steps.honeycomb-payload.outputs.PAYLOAD }}
+      run: |
+        curl -i -X POST \ 'https://api.honeycomb.io/1/markers/${{ inputs.dataset }}' \
+          -H 'Content-Type: application/json' \
+          -H 'X-Honeycomb-Team: ${{ inputs.honeycombApiKey }}' \
+          -d "$PAYLOAD"
+
