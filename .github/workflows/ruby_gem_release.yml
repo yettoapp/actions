@@ -183,18 +183,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - ruby
+        settings:
+          - os: ubuntu-latest
+            platform: x86_64-linux
+            toolchain: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            platform: arm64-linux
+            toolchain: aarch64-unknown-linux-gnu
+          - os: macos-latest
+            platform: x86_64-darwin
+            toolchain: x86_64-apple-darwin
+          - os: macos-latest
+            platform: arm64-darwin
+            toolchain: aarch64-apple-darwin
+          - os: windows-latest
+            platform: x64-mingw-ucrt
+            toolchain: x86_64-pc-windows-msvc
 
-          - x86_64-linux
-          - aarch64-linux
-
-          - x86_64-darwin
-          - arm64-darwin
-
-          - x64-mingw-ucrt
-
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.settings.os }}
+    env:
+      TOOLCHAIN: ${{ matrix.settings.toolchain }}
     steps:
       - uses: actions/checkout@v4
 
@@ -203,6 +211,14 @@ jobs:
         with:
           ruby: true
           node: ${{ inputs.requires_node == true}}
+
+      - name: Add rustup targets
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.settings.toolchain}}
+
+      - name: Compile dependencies
+        run: bundle exec rake compile
 
       - name: Publish to RubyGems
         run: |
@@ -213,7 +229,7 @@ jobs:
           script/prepare || echo 0
 
           printf -- "---\n:rubygems_api_key: ${{ secrets.rubygems_api_key }}\n" > $HOME/.gem/credentials
-          bundle exec rake gem:${{matrix.platform}}
+          bundle exec rake gem:${{matrix.settings.platform}}
           for gem in pkg/${{ inputs.gem_name }}-${{ needs.release.outputs.version }}*.gem ; do
             gem push "$gem" --host https://rubygems.org
           done
