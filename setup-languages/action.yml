@@ -20,6 +20,12 @@ inputs:
   deno-version:
     description: "Deno version to use"
     default: "v1.x"
+  rust:
+    description: "Set up Rust environment"
+    default: "false"
+  rust-targets:
+    description: "Rust target to use"
+    default: "default"
 
 runs:
   using: "composite"
@@ -51,3 +57,16 @@ runs:
       if: ${{ inputs.deno == 'true' }}
       with:
         deno-version: ${{ inputs.deno-version }}
+
+    - name: Install Rust
+      if: ${{ inputs.rust == 'true' }}
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+        targets: ${{ inputs.rust-targets }}
+
+    - uses: Swatinem/rust-cache@v2
+      if: ${{ inputs.rust == 'true' }}
+      with:
+        cache-all-crates: "true"
+        save-if: ${{ github.ref == 'refs/heads/main' }}

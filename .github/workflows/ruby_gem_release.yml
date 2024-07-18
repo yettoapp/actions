@@ -202,7 +202,7 @@ jobs:
 
     runs-on: ${{ matrix.settings.os }}
     env:
-      TOOLCHAIN: ${{ matrix.settings.toolchain }}
+      OPENSSL_STATIC: 1
     steps:
       - uses: actions/checkout@v4
 
@@ -210,20 +210,12 @@ jobs:
         uses: yettoapp/actions/setup-languages@main
         with:
           ruby: true
-          node: ${{ inputs.requires_node == true}}
-
-      - name: Add rustup targets
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          target: ${{ matrix.settings.toolchain}}
-
-      - name: Run precompile script
-        if: ${{ matrix.settings.os == 'ubuntu-latest' }}
-        run: |
-          script/precompile || echo 0
+          node: ${{ inputs.requires_node == true }}
+          rust: true
+          rust-targets: ${{ matrix.settings.toolchain }}
 
       - name: Compile dependencies
-        run: bundle exec rake compile
+        run: TOOLCHAIN=${{ matrix.settings.toolchain }} bundle exec rake compile
 
       - name: Publish to RubyGems
         run: |
