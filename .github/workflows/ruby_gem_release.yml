@@ -197,12 +197,10 @@ jobs:
             platform: arm64-darwin
             toolchain: aarch64-apple-darwin
           - os: windows-latest
-            platform: x64-mingw-ucrt
+            platform: x86_64-windows
             toolchain: x86_64-pc-windows-msvc
 
     runs-on: ${{ matrix.settings.os }}
-    env:
-      OPENSSL_STATIC: 1
     steps:
       - uses: actions/checkout@v4
 
@@ -214,10 +212,22 @@ jobs:
           rust: true
           rust-targets: ${{ matrix.settings.toolchain }}
 
-      - name: Compile dependencies
-        run: TOOLCHAIN=${{ matrix.settings.toolchain }} bundle exec rake compile
+      # this is emulated and has special needs
+      - name: Fetch aarch64-unknown-linux-gnu prerequisites
+        if: ${{ matrix.settings.toolchain == 'aarch64-unknown-linux-gnu' }}
+        run: |
+          cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Compile
+        env:
+          TOOLCHAIN: ${{ matrix.settings.toolchain }}
+        run: |
+          bundle exec rake compile
 
       - name: Publish to RubyGems
+        env:
+          TOOLCHAIN: ${{ matrix.settings.toolchain }}
+        shell: bash
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
