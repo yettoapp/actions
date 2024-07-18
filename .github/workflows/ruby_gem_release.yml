@@ -217,6 +217,11 @@ jobs:
         with:
           target: ${{ matrix.settings.toolchain}}
 
+      - name: Run precompile script
+        if: ${{ matrix.settings.os == 'ubuntu-latest' }}
+        run: |
+          script/precompile || echo 0
+
       - name: Compile dependencies
         run: bundle exec rake compile
 
