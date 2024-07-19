@@ -214,6 +214,7 @@ jobs:
 
       # this is emulated and has special needs
       - name: Fetch aarch64-unknown-linux-gnu prerequisites
+        shell: bash
         if: ${{ matrix.settings.toolchain == 'aarch64-unknown-linux-gnu' }}
         run: |
           cargo install cross --git https://github.com/cross-rs/cross
@@ -221,6 +222,7 @@ jobs:
       - name: Compile
         env:
           TOOLCHAIN: ${{ matrix.settings.toolchain }}
+        shell: bash
         run: |
           bundle exec rake compile
 
