@@ -1,0 +1,20 @@
+query GetProjectAndFieldByNumber($owner: String!, $projectNumber: Int!, $iterFieldName: String!) {
+  organization(login: $owner) {
+    projectV2(number: $projectNumber) {
+      id
+      field(name: $iterFieldName) {
+        ... on ProjectV2IterationField {
+          id
+          name
+          configuration {
+            iterations {
+              id
+              title
+              startDate
+            }
+          }
+        }
+      }
+    }
+  }
+}
