@@ -95,7 +95,7 @@ jobs:
       - name: Set up the database
         shell: bash
         run: |
-          bundle exec rails db:create db:schema:load || echo 'DB could not be created!'
+          bin/rails db:create db:schema:load || echo 'DB could not be created!'
 
       - if: ${{ inputs.system_tests == true }}
         name: Get Vite cache restore key
