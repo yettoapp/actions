@@ -24,7 +24,7 @@ runs:
         RAILS_ENV: development
       shell: bash
       run: |
-        bin/rails db:drop db:create db:migrate
+        bin/rails db:test:prepare
 
     - name: Update RBI files
       id: update
