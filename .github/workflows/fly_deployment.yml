@@ -68,7 +68,9 @@ jobs:
 
       - uses: yettoapp/actions/setup-fly@main
 
-      - run: |
+      - name: Deploy to Fly.io
+        timeout-minutes: 10
+        run: |
           flyctl deploy --remote-only \
           --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
           --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \

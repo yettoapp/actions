@@ -128,6 +128,7 @@ jobs:
           bin/rails assets:precompile
 
       - uses: yettoapp/actions/run-ruby-tests@main
+        timeout-minutes: 10
         id: run-tests
         with:
           github_token: ${{ secrets.gh_token }}

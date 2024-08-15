@@ -36,5 +36,6 @@ jobs:
 
       - uses: yettoapp/actions/run-ruby-tests@main
         id: run-tests
+        timeout-minutes: 10
         with:
           github_token: ${{ secrets.gh_token }}
