@@ -27,6 +27,8 @@ runs:
         bin/rails db:drop db:create db:migrate || echo 'DB could not be created!'
 
     - name: Update RBI files
+      env:
+        RAILS_ENV: development
       id: update
       shell: bash
       run: $GITHUB_ACTION_PATH/../script/sorbet --update
