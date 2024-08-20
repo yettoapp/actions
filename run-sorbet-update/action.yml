@@ -24,7 +24,7 @@ runs:
         RAILS_ENV: development
       shell: bash
       run: |
-        bin/rails db:test:prepare
+        bin/rails db:drop db:create db:migrate || echo 'DB could not be created!'
 
     - name: Update RBI files
       id: update
