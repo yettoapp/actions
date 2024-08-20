@@ -14,6 +14,8 @@ on:
         required: false
       FLY_METRICS_TOKEN:
         required: false
+      FLY_INSTANCE_IP:
+        required: false
     inputs:
       target:
         required: true
@@ -76,6 +78,7 @@ jobs:
           --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           --build-arg HONEYCOMB_API_KEY=${{ secrets.HONEYCOMB_API_KEY }} \
           --build-arg FLY_METRICS_TOKEN=${{ secrets.FLY_METRICS_TOKEN }} \
+          --build-arg FLY_INSTANCE_IP=${{ secrets.FLY_INSTANCE_IP }} \
           ${{ inputs.fly_args }} \
           -c vendor/fly/fly-${{ inputs.target }}.toml
         env:
