@@ -4,7 +4,7 @@ description: "Based on the provided inputs, sets up the Fly CLIs"
 inputs:
   flyctl-version:
     description: "Set Fly version"
-    default: 0.1.84
+    default: 0.2.124
 
 runs:
   using: "composite"
