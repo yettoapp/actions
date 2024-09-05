@@ -32,6 +32,15 @@ jobs:
     name: Fly
     runs-on: ubuntu-latest-m
     steps:
+      - name: Merge main branch
+        if: ${{ inputs.forced == false }}
+        uses: everlytic/branch-merge@1.1.1
+        with:
+          github_token: ${{ secrets.gh_token }}
+          source_ref: ${{ github.repository.default_branch }}
+          target_branch: ${{ github.ref }}
+          commit_message_template: "[auto-merge] Merged {source_ref} into target {target_branch}"
+
       - name: Start deployment
         id: deployment
         uses: actions/github-script@v7
@@ -40,7 +49,7 @@ jobs:
           github-token: ${{ secrets.gh_token }}
           script:
             | # FIXME: `required_contexts` are always off, because it seems to conflict with GH actions; https://github.com/yettoapp/yetto/actions/runs/5417564599
-            let forced = ${{ inputs.forced == true }}
+            let forced = ${{ inputs.forced == true }};
             let opts = {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -48,7 +57,7 @@ jobs:
               environment: "${{ inputs.target}}",
               production_environment: ${{ inputs.target == 'production' }},
               transient_environment: ${{ inputs.target == 'staging' }},
-              auto_merge: !forced,
+              auto_merge: false,
               description: "Release deployment",
               required_contexts: []
             };
