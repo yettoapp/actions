@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Merge main branch
-        if: ${{ inputs.forced == false }}
+        if: ${{ inputs.forced == false && github.ref != 'refs/heads/production' }}
         shell: bash
         run: |
           echo ${{ secrets.gh_token }} | gh auth login --with-token
