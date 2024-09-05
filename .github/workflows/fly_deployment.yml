@@ -34,12 +34,10 @@ jobs:
     steps:
       - name: Merge main branch
         if: ${{ inputs.forced == false }}
-        uses: everlytic/branch-merge@1.1.1
-        with:
-          github_token: ${{ secrets.gh_token }}
-          source_ref: ${{ github.repository.default_branch }}
-          target_branch: ${{ github.ref }}
-          commit_message_template: "[auto-merge] Merged {source_ref} into target {target_branch}"
+        shell: bash
+        run: |
+          echo ${{ secrets.gh_token }} | gh auth login --with-token
+          gh pr update-branch
 
       - name: Start deployment
         id: deployment
