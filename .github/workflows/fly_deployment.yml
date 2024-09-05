@@ -39,7 +39,10 @@ jobs:
         shell: bash
         run: |
           echo ${{ secrets.gh_token }} | gh auth login --with-token
-          gh pr update-branch ${{ github.ref }}
+          retVal="$(gh pr view; echo $?)"
+          if [ $retVal -eq 0 ]; then
+            gh pr update-branch ${{ github.ref }}
+          fi
 
       - name: Start deployment
         id: deployment
