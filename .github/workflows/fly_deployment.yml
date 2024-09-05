@@ -32,6 +32,8 @@ jobs:
     name: Fly
     runs-on: ubuntu-latest-m
     steps:
+      - uses: actions/checkout@v4
+
       - name: Merge main branch
         if: ${{ inputs.forced == false }}
         shell: bash
@@ -70,8 +72,6 @@ jobs:
               log_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             });
             return deployment.data.id
-
-      - uses: actions/checkout@v4
 
       - uses: yettoapp/actions/setup-fly@main
 
