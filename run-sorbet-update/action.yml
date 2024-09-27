@@ -41,3 +41,5 @@ runs:
         commit_user_name: Sisyphus
         commit_user_email: sisyphus@yetto.app
         commit_author: Sisyphus <sisyphus@yetto.app>
+
+        file_pattern: sorbet/
