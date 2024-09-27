@@ -1,0 +1,68 @@
+{
+  "name": "add-to-iteration",
+  "description": "An event based way to automatically add PRs and/or Issues to a project's current iteration",
+  "version": "1.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "homepage": "https://github.com/yettoapp/actions",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yettoapp/actions.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yettoapp/actions/issues"
+  },
+  "keywords": [
+    "actions",
+    "node",
+    "GitHub",
+    "GitHub Projects"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "bundle": "npm run format:write && npm run package",
+    "ci-test": "jest",
+    "coverage": "make-coverage-badge --output-path ./badges/coverage.svg",
+    "format:write": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "package": "ncc build src/index.ts --license licenses.txt",
+    "package:watch": "npm run package -- --watch",
+    "test": "jest --passWithNoTests",
+    "all": "npm run format:write && npm run test && npm run coverage && npm run package",
+    "codegen": "graphql-codegen --config graphql.config.ts"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "verbose": true,
+    "clearMocks": true,
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "transform": {
+      "^,+\\.ts$": "ts-jest"
+    },
+    "coverageReporters": [
+      "json-summary",
+      "text",
+      "lcov"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "./src/**"
+    ]
+  }
+}
