@@ -21,7 +21,8 @@ on:
         default: ""
         type: string
       template:
-        required: true
+        required: false
+        default: ""
         type: string
 
 permissions:
@@ -41,7 +42,7 @@ jobs:
 
       - uses: yettoapp/actions/convert-dockerfile-template@main
         with:
-          template: ${{ input.template }}
+          template: ${{ inputs.template }}
 
       - name: Build production Dockerfile
         run: |

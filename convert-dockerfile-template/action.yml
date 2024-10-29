@@ -9,10 +9,14 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: yettoapp/actions/setup-languages@main
+      with:
+        ruby: true
+
     - name: Fetch template
       shell: bash
       run: |
-        gh api repos/yettoapp/images/contents/${{ inputs.template }} --jq '.content' | base64 --decode > Dockerfile.template
+        gh api repos/yettoapp/images/contents/templates/${{ inputs.template }} --jq '.content' | base64 --decode > Dockerfile.template
 
     - name: Construct Dockerfile
       shell: bash
