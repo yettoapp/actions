@@ -20,6 +20,9 @@ on:
         required: false
         default: ""
         type: string
+      template:
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -38,7 +41,7 @@ jobs:
 
       - uses: yettoapp/actions/convert-dockerfile-template@main
         with:
-          template: Dockerfile.rails
+          template: ${{ input.template }}
 
       - name: Build production Dockerfile
         run: |
