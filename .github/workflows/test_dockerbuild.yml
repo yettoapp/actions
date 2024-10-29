@@ -36,6 +36,10 @@ jobs:
 
       - uses: yettoapp/actions/setup-fly@main
 
+      - uses: yettoapp/actions/convert-dockerfile-template@main
+        with:
+          template: Dockerfile.rails
+
       - name: Build production Dockerfile
         run: |
           flyctl deploy --remote-only --build-only \
