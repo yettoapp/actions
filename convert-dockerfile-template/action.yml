@@ -14,11 +14,20 @@ runs:
         ruby: true
 
     - name: Fetch template
+      if: ${{ inputs.template != '' }}
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
         gh api repos/yettoapp/images/contents/templates/${{ inputs.template }} --jq '.content' | base64 --decode > Dockerfile.template
+
+    - name: Copy template
+      if: ${{ inputs.template == '' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        cat Dockerfile > Dockerfile.template
 
     - name: Construct Dockerfile
       shell: bash
