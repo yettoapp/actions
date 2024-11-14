@@ -1,0 +1,52 @@
+---
+name: "Automerge Dependabot and Sisyphus PRs"
+
+on:
+  workflow_call:
+    inputs:
+      automerge:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+
+    # is this PR from a bot?
+    if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'sisyphusbot' }}
+
+    env:
+      PR_URL: ${{ github.event.pull_request.html_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - if: ${{ github.actor == 'dependabot[bot]' }}
+        name: Fetch Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - if: ${{ github.actor != 'dependabot[bot]' && startsWith(github.event.pull_request.title, '[auto') }}
+        name: Approve automated PR
+        shell: bash
+        run: |
+          gh pr review --approve "$PR_URL" --body "Approving this pull request because it's from a bot, bleep bloop."
+          gh pr merge --auto --squash "$PR_URL";
+
+      - if: ${{ github.actor == 'dependabot[bot]' && inputs.automerge == true && (steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor')}}
+        name: Approve patch and minor updates
+        shell: bash
+        run: |
+          gh pr review --approve "$PR_URL" --body "Approving this pull request because it includes a patch or minor update."
+          gh pr merge --auto --squash "$PR_URL";
+
+      - if: ${{steps.dependabot-metadata.outputs.update-type == 'version-update:semver-major' }}
+        name: Comment on major updates of dependencies
+        shell: bash
+        run: |
+          gh pr comment $PR_URL --body "**Not approving** this PR because it includes a major update of a dependency. Please review the changes and approve manually."
