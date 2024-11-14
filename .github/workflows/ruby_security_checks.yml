@@ -37,21 +37,12 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.gh_token }}
 
-      - uses: yettoapp/actions/pr-contains-files@main
-        id: pr_contains_rb
-        with:
-          pr_number: ${{ github.event.number }}
-          pattern: ".rb$|erb$"
-          github_token: ${{ secrets.gh_token }}
-
       - name: Set up Ruby
-        if: ${{ steps.pr_contains_rb.outputs.exists == 'true' }}
         uses: yettoapp/actions/setup-languages@main
         with:
           ruby: true
 
       - name: brakeman report
-        if: ${{ steps.pr_contains_rb.outputs.exists == 'true' }}
         run: |
           bundle exec brakeman --color -o /dev/stdout -o security-results.json
           cat security-results.json
