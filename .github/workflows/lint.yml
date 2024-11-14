@@ -1,0 +1,57 @@
+name: Lint
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+    inputs:
+      ruby:
+        description: "Set up Ruby environment"
+        required: false
+        default: false
+        type: boolean
+      node:
+        description: "Set up Node environment"
+        required: false
+        default: false
+        type: boolean
+      additional_commands:
+        description: "Any additional commands to run"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest-m
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - name: Set up languages
+        uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: ${{ inputs.ruby }}
+          node: ${{ inputs.node }}
+
+      - name: Rubocop
+        if: ${{ inputs.ruby }}
+        run: bundle exec rake rubocop -A
+
+      - name: ESLint
+        if: ${{ inputs.node }}
+        run: npm run lint:fix
+
+      - name: Run additional commands
+        if: ${{ inputs.additional_commands != '' }}
+        run: ${{ inputs.additional_commands }}
+
+      - name: Commit linted files
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "[auto-lint]: Lint files"
+          commit_user_name: Sisyphus
+          commit_user_email: sisyphus@yetto.app
+          commit_author: Sisyphus <sisyphus@yetto.app>

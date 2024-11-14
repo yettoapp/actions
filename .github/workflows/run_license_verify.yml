@@ -1,0 +1,64 @@
+name: Verify licenses
+
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+    inputs:
+      ruby:
+        description: "Set up Ruby environment"
+        required: false
+        default: false
+        type: boolean
+      node:
+        description: "Set up Node environment"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  licensed:
+    runs-on: ubuntu-latest-m
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: ${{ inputs.ruby }}
+          node: ${{ inputs.node }}
+
+      - name: Run license verify
+        id: check_verify
+        shell: bash
+        run: |
+          $GITHUB_ACTION_PATH/script/licenses --verify && true
+
+          if [ $? -eq 0 ] ; then
+            echo "All licenses are up to date!"
+          else
+            $GITHUB_ACTION_PATH/script/licenses --update && true
+
+            if git diff-index --quiet HEAD --; then
+              echo "There was an error generating files! Try running script/licenses --verify locally to see what's wrong."
+              exit 1
+            else
+              echo "Licenses updated successfully!"
+            fi
+          fi
+
+      - name: Commit licenses
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "[auto-license]: Update license information"
+
+          commit_user_name: Sisyphus
+          commit_user_email: sisyphus@yetto.app
+          commit_author: Sisyphus <sisyphus@yetto.app>
