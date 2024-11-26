@@ -15,6 +15,11 @@ on:
         required: false
         default: false
         type: boolean
+      rust:
+        description: "Set up Rust environment"
+        required: false
+        default: false
+        type: boolean
       additional_commands:
         description: "Any additional commands to run"
         required: false
@@ -35,6 +40,7 @@ jobs:
         with:
           ruby: ${{ inputs.ruby }}
           node: ${{ inputs.node }}
+          rust: ${{ inputs.rust }}
 
       - name: Rubocop
         if: ${{ inputs.ruby }}
@@ -43,6 +49,12 @@ jobs:
       - name: ESLint
         if: ${{ inputs.node }}
         run: npm run lint:fix
+
+      - name: Clippy
+        if: ${{ inputs.rust }}
+        run: |
+          cargo fmt
+          cargo clippy --fix --allow-dirty
 
       - name: Run additional commands
         if: ${{ inputs.additional_commands != '' }}
