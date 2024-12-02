@@ -35,16 +35,21 @@ jobs:
           ruby: ${{ inputs.ruby }}
           node: ${{ inputs.node }}
 
+      - name: Download license script
+        run: |
+          curl -o $PWD/script/licenses.sh https://raw.githubusercontent.com/yettoapp/actions/refs/heads/main/script/licenses
+          chmod +x $PWD/script/licenses.sh
+
       - name: Run license verify
         id: check_verify
         shell: bash
         run: |
-          $GITHUB_ACTION_PATH/script/licenses --verify && true
+          $PWD/script/licenses --verify && true
 
           if [ $? -eq 0 ] ; then
             echo "All licenses are up to date!"
           else
-            $GITHUB_ACTION_PATH/script/licenses --update && true
+            $PWD/script/licenses --update && true
 
             if git diff-index --quiet HEAD --; then
               echo "There was an error generating files! Try running script/licenses --verify locally to see what's wrong."
