@@ -44,12 +44,12 @@ jobs:
         id: check_verify
         shell: bash
         run: |
-          $PWD/script/licenses --verify && true
+          $PWD/script/licenses.sh --verify && true
 
           if [ $? -eq 0 ] ; then
             echo "All licenses are up to date!"
           else
-            $PWD/script/licenses --update && true
+            $PWD/script/licenses.sh --update && true
 
             if git diff-index --quiet HEAD --; then
               echo "There was an error generating files! Try running script/licenses --verify locally to see what's wrong."
