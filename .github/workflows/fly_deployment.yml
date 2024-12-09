@@ -81,10 +81,6 @@ jobs:
 
       - uses: yettoapp/actions/setup-fly@main
 
-      - uses: yettoapp/actions/convert-dockerfile-template@main
-        with:
-          template: ${{ inputs.template }}
-
       - name: Deploy to Fly.io
         timeout-minutes: 10
         run: |
