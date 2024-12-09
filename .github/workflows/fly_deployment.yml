@@ -93,8 +93,10 @@ jobs:
           --build-arg RAILS_ENV=${{ inputs.target }} \
           --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
           --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-          --build-arg HONEYCOMB_API_KEY=${{ secrets.HONEYCOMB_API_KEY }} \
-          --build-arg FLY_METRICS_TOKEN=${{ secrets.FLY_METRICS_TOKEN }} \
+
+          --build-secret HONEYCOMB_API_KEY=${{ secrets.HONEYCOMB_API_KEY }} \
+          --build-secret FLY_METRICS_TOKEN=${{ secrets.FLY_METRICS_TOKEN }} \
+
           ${{ inputs.fly_args }} \
           -c vendor/fly/fly-${{ inputs.target }}.toml
         env:
