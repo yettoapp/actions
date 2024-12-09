@@ -59,6 +59,8 @@ jobs:
             fi
           fi
 
+          rm $PWD/script/licenses.sh
+
       - name: Commit licenses
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
