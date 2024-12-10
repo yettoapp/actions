@@ -87,6 +87,7 @@ jobs:
           flyctl deploy --remote-only \
           --build-arg GIT_SHA=${{ github.sha }} \
           --build-arg RAILS_ENV=${{ inputs.target }} \
+          --build-arg APP_ENV=${{ inputs.target }} \
           --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
           --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           --build-secret HONEYCOMB_API_KEY=${{ secrets.HONEYCOMB_API_KEY }} \
