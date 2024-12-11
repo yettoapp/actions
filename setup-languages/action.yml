@@ -13,7 +13,7 @@ inputs:
     default: "false"
   node-version:
     description: "Node version to use"
-    default: "18"
+    default: "22"
   deno:
     description: "Set up Deno environment"
     default: "false"
