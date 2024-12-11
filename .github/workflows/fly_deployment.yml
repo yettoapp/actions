@@ -81,6 +81,9 @@ jobs:
 
       - uses: yettoapp/actions/setup-fly@main
 
+      # note that build secrets are defined on a per app basis, but due
+      # to a limitation in GitHub Actions, we can't define them in the
+      # workflow_call inputs. if these are not set, they harmlessly default to `""`
       - name: Deploy to Fly.io
         timeout-minutes: 10
         run: |
@@ -89,8 +92,8 @@ jobs:
           --build-arg GIT_SHA=${{ github.sha }} \
           --build-arg REGISTRY=ghcr.io/ \
           --build-arg APP_ENV=${{ inputs.target }} \
-          --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-          --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+          --build-secret AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+          --build-secret AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           --build-secret HONEYCOMB_API_KEY=${{ secrets.HONEYCOMB_API_KEY }} \
           --build-secret FLY_METRICS_TOKEN=${{ secrets.FLY_METRICS_TOKEN }} \
           ${{ inputs.fly_args }} \
