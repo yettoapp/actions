@@ -27,5 +27,5 @@ jobs:
 
       - name: Hear it?
         run: |
-          echo "I'm listening..."
-          I heard you say update ${{ github.event.inputs.action }} in ${{ github.event.inputs.repo }} (to ${{ github.event.inputs.value }}
+          echo "I'm listening..." && \
+          echo "I heard you say update ${{ github.event.inputs.action }} in ${{ github.event.inputs.repo }} (to ${{ github.event.inputs.value }}"
