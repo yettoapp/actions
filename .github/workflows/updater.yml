@@ -25,7 +25,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Hear it?
+      - name: Repeat it back
         run: |
           echo "I'm listening..." && \
           echo "I heard you say update ${{ github.event.inputs.action }} in ${{ github.event.inputs.repo }} (to ${{ github.event.inputs.value }}"
+
+      - name: Update the app
+        run: |
+          if [ "${{ github.event.inputs.action }}" == "ruby" ]; then
+            echo "action=ruby" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.action }}" == "hephaestus" ]; then
+            echo "action=hephaestus" >> $GITHUB_ENV
+          else
+            echo "I don't know what '${{ github.event.inputs.action }}' means."
+            exit 0;
+          fi
+
+      - name: Check out project repository
+        if: ${{ github.event.inputs.action == 'hephaestus' || github.event.inputs.action == 'ruby' }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.repo }}
+          token: ${{ secrets.GH_SISYPHUS_YETTO_REPO_TOKEN }}
