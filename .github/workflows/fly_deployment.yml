@@ -87,7 +87,7 @@ jobs:
           flyctl deploy --remote-only \
           --build-arg CACHEBUST=$(date +%s) \
           --build-arg GIT_SHA=${{ github.sha }} \
-          --build-arg RAILS_ENV=${{ inputs.target }} \
+          --build-arg REGISTRY=ghcr.io/ \
           --build-arg APP_ENV=${{ inputs.target }} \
           --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
           --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
@@ -97,7 +97,6 @@ jobs:
           -c vendor/fly/fly-${{ inputs.target }}.toml
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
-          RAILS_ENV: ${{ inputs.target }}
 
       - name: update deployment status
         uses: actions/github-script@v7
