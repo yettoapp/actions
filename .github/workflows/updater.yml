@@ -1,0 +1,31 @@
+name: Update apps
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        required: true
+        type: string
+      value:
+        required: false
+        type: string
+      repo:
+        required: true
+        type: string
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Hear it?
+        run: |
+          echo "I'm listening..."
+          I heard you say update ${{ github.event.inputs.action }} in ${{ github.event.inputs.repo }} (to ${{ github.event.inputs.value }}
