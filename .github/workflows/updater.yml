@@ -52,7 +52,7 @@ jobs:
           echo "HEPHAESTUS_VERSION=${HEPHAESTUS_VERSION}" >> $GITHUB_ENV
 
       - name: Create Hephaestus Pull Request
-        id: cpr
+        id: hephaestus-pr
         if: ${{ github.event.inputs.action == 'hephaestus' }}
         uses: peter-evans/create-pull-request@v7
         with:
@@ -68,3 +68,29 @@ jobs:
           delete-branch: true
           labels: update
           branch: "update-hephaestus"
+
+      - name: Set Ruby version
+        if: ${{ github.event.inputs.action == 'ruby' }}
+        run: |
+          if [ -f .ruby-version ]; then
+            echo ${{ github.event.inputs.value }} > .ruby-version
+          else
+            echo "RUBY_VERSION=3.0.2" >> $GITHUB_ENV
+          fi
+
+      - name: Create Ruby Pull Request
+        id: ruby-pr
+        if: ${{ github.event.inputs.action == 'ruby' }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "Update Ruby to v${{ github.event.inputs.value }}"
+          title: "Update Ruby to v${{ github.event.inputs.value }}"
+          body: >
+            This is an automated PR to update Ruby to v${{ github.event.inputs.value }}.<br/><br/>
+            Due to security considerations, PRs created by GitHub Actions cannot
+            be merged automatically. Please review the changes and merge the PR.<br/><br/>
+            If you require the test suites to run, you can close the PR and reopen it to trigger
+            those workflows.
+          delete-branch: true
+          labels: update
+          branch: "update-ruby"
