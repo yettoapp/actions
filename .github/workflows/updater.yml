@@ -1,16 +1,13 @@
-name: Update apps
+name: Update repository
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       action:
         required: true
         type: string
       value:
         required: false
-        type: string
-      repo:
-        required: true
         type: string
 
 permissions:
@@ -41,26 +38,10 @@ jobs:
             exit 0;
           fi
 
-      - name: Check out project repository
-        if: ${{ github.event.inputs.action == 'hephaestus' || github.event.inputs.action == 'ruby' }}
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.event.inputs.repo }}
-          token: ${{ secrets.GH_SISYPHUS_YETTO_REPO_TOKEN }}
-          path: ${{ github.event.inputs.repo }}
-
-      - name: cd into project directory
-        if: ${{ github.event.inputs.action == 'hephaestus' || github.event.inputs.action == 'ruby' }}
-        run: cd ${{ github.event.inputs.repo }}
-
       - uses: yettoapp/actions/setup-languages@main
         if: ${{ github.event.inputs.action == 'hephaestus' }}
         with:
           ruby: true
-
-      - name: Update Hephaestus
-        if: ${{ github.event.inputs.action == 'hephaestus' }}
-        run: bundle update hephaestus
 
       - name: Update Hephaestus
         if: ${{ github.event.inputs.action == 'hephaestus' }}
@@ -86,3 +67,10 @@ jobs:
           delete-branch: true
           labels: update
           branch: "update-hephaestus"
+
+      - name: Update Hephaestus
+        if: ${{ github.event.inputs.action == 'hephaestus' }}
+        run: |
+          bundle update hephaestus
+          HEPHAESTUS_VERSION="bundle show hephaestus | grep -oE 'hephaestus-[0-9]+\.[0-9]+\.[0-9]+' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+'"
+          echo "HEPHAESTUS_VERSION=${HEPHAESTUS_VERSION}" >> $GITHUB_ENV
