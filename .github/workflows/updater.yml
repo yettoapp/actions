@@ -33,9 +33,9 @@ jobs:
       - name: Update the app
         run: |
           if [ "${{ github.event.inputs.action }}" == "ruby" ]; then
-            echo "action=ruby" >> $GITHUB_ENV
+            echo "UPDATE_ACTION=ruby" >> $GITHUB_ENV
           elif [ "${{ github.event.inputs.action }}" == "hephaestus" ]; then
-            echo "action=hephaestus" >> $GITHUB_ENV
+            echo "UPDATE_ACTION=hephaestus" >> $GITHUB_ENV
           else
             echo "I don't know what '${{ github.event.inputs.action }}' means."
             exit 0;
@@ -47,3 +47,42 @@ jobs:
         with:
           repository: ${{ github.event.inputs.repo }}
           token: ${{ secrets.GH_SISYPHUS_YETTO_REPO_TOKEN }}
+          path: ${{ github.event.inputs.repo }}
+
+      - name: cd into project directory
+        if: ${{ github.event.inputs.action == 'hephaestus' || github.event.inputs.action == 'ruby' }}
+        run: cd ${{ github.event.inputs.repo }}
+
+      - uses: yettoapp/actions/setup-languages@main
+        if: ${{ github.event.inputs.action == 'hephaestus' }}
+        with:
+          ruby: true
+
+      - name: Update Hephaestus
+        if: ${{ github.event.inputs.action == 'hephaestus' }}
+        run: bundle update hephaestus
+
+      - name: Update Hephaestus
+        if: ${{ github.event.inputs.action == 'hephaestus' }}
+        run: |
+          bundle update hephaestus
+          HEPHAESTUS_VERSION="bundle show hephaestus | grep -oE 'hephaestus-[0-9]+\.[0-9]+\.[0-9]+' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+'"
+          echo "HEPHAESTUS_VERSION=${HEPHAESTUS_VERSION}" >> $GITHUB_ENV
+
+      - name: Create Hephaestus Pull Request
+        id: cpr
+        if: ${{ github.event.inputs.action == 'hephaestus' }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: "Gemfile.lock"
+          commit-message: "Update Hephaestus to v${{ env.HEPHAESTUS_VERSION }}"
+          title: "Update Hephaestus to v${{ env.HEPHAESTUS_VERSION }}"
+          body: >
+            This is an automated PR to update Hephaestus to v${{ env.HEPHAESTUS_VERSION }}.<br/><br/>
+            Due to security considerations, PRs created by GitHub Actions cannot
+            be merged automatically. Please review the changes and merge the PR.<br/><br/>
+            If you require the test suites to run, you can close the PR and reopen it to trigger
+            those workflows.
+          delete-branch: true
+          labels: update
+          branch: "update-hephaestus"
