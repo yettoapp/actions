@@ -68,6 +68,3 @@ jobs:
           delete-branch: true
           labels: update
           branch: "update-hephaestus"
-
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
