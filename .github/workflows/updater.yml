@@ -25,7 +25,7 @@ jobs:
       - name: Repeat it back
         run: |
           echo "I'm listening..." && \
-          echo "I heard you say update ${{ github.event.inputs.action }} in ${{ github.event.inputs.repo }} (to ${{ github.event.inputs.value }}"
+          echo "I heard you say update ${{ github.event.inputs.action }} (to ${{ github.event.inputs.value }}"
 
       - name: Update the app
         run: |
