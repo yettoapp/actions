@@ -20,10 +20,6 @@ on:
         required: false
         default: ""
         type: string
-      template:
-        required: false
-        default: ""
-        type: string
 
 permissions:
   contents: write
