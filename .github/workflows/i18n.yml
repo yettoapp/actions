@@ -1,0 +1,48 @@
+name: Localization (I18n)
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+
+    inputs:
+      ruby:
+        description: "Set up Ruby environment"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - name: Set up languages
+        uses: yettoapp/actions/setup-languages@main
+        with:
+          ruby: ${{ inputs.ruby }}
+
+      - name: Check (and correct) locale file normalization
+        run: bundle exec i18n-tasks normalize
+
+      - name: Check for unused strings
+        run: bundle exec i18n-tasks unused
+
+      - name: Check for missing strings in YML
+        run: bundle exec i18n-tasks missing
+
+      - name: Check for wrong string interpolations
+        run: bundle exec i18n-tasks check-consistent-interpolations
+
+      - name: Commit linted files
+        if: always()
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "[auto-lint]: Lint i18n files"
+          commit_user_name: Sisyphus
+          commit_user_email: sisyphus@yetto.app
+          commit_author: Sisyphus <sisyphus@yetto.app>
