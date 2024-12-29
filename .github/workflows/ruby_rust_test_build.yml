@@ -1,0 +1,66 @@
+name: Test cruby build
+concurrency:
+  group: "${{github.workflow}}-${{github.ref}}"
+  cancel-in-progress: true
+
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+    inputs:
+      include_musl:
+        required: false
+        default: false
+        type: boolean
+
+env:
+  CACHE_KEY_PREFIX: "cruby-v1"
+  SUPPORTED_RUBY_VERSIONS: "3.2,3.3,3.4"
+  LATEST_RUBY_VERSION: "3.4"
+
+jobs:
+  cruby-package:
+    name: Compile native gem
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - x86_64-linux
+          - aarch64-linux
+
+          - x86_64-linux-musl
+          - aarch64-linux-musl
+
+          - x86_64-darwin
+          - arm64-darwin
+
+          - x64-mingw-ucrt
+
+        # include musl only when asked
+        include_musl:
+          - ${{ inputs.include_musl }}
+        exclude:
+          - include_musl: false
+            platform: x86_64-linux-musl
+          - include_musl: false
+            platform: aarch64-linux-musl
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "${{ env.LATEST_RUBY_VERSION }}"
+
+      - uses: oxidize-rb/actions/cross-gem@main
+        id: cross-gem
+        with:
+          platform: ${{ matrix.platform }}
+          ruby-versions: "${{ env.SUPPORTED_RUBY_VERSIONS }}"
+
+      - uses: oxidize-rb/actions/test-gem-build@main
+        with:
+          platform: ${{ matrix.platform }}
+          ruby-versions: "${{ env.SUPPORTED_RUBY_VERSIONS }}"
