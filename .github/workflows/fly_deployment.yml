@@ -34,15 +34,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Merge main branch
+      - name: Merge production branch
         if: ${{ inputs.forced == false && github.ref != 'refs/heads/production' }}
         shell: bash
         run: |
-          echo ${{ secrets.gh_token }} | gh auth login --with-token
-          retVal="$(gh pr view; echo $?)"
-          if [ $retVal -eq 0 ]; then
-            gh pr update-branch ${{ github.ref }}
-          fi
+          gh pr update-branch
+        env:
+          GH_TOKEN: ${{ secrets.gh_token }}
 
       - name: Start deployment
         id: deployment
