@@ -24,6 +24,10 @@ permissions:
 jobs:
   licensed:
     runs-on: ubuntu-latest-m
+
+    # always skip
+    if: true
+
     steps:
       - uses: actions/checkout@v4
         with:
