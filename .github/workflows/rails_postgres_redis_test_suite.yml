@@ -125,6 +125,7 @@ jobs:
         name: Precompile assets
         shell: bash
         run: |
+          export PRECOMPILING=1
           bin/rails assets:precompile
 
       - uses: yettoapp/actions/run-ruby-tests@main
