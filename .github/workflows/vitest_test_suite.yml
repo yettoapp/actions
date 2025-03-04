@@ -1,0 +1,42 @@
+---
+name: Runs a Vitest test suite
+
+on:
+  workflow_call:
+    secrets:
+      gh_token:
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on:
+      labels: Ubuntu-TestRunner
+    timeout-minutes: 10
+
+    steps:
+      - if: ${{ contains(github.event.head_commit.message, '[skip test]') }}
+        name: Skip test
+        shell: bash
+        run: |
+          echo "Skipping test workflow because commit message contains `[skip test]`"
+          exit 0
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.gh_token }}
+
+      - uses: yettoapp/actions/setup-languages@main
+        with:
+          node: true
+
+      - name: Run tests
+        timeout-minutes: 10
+        id: run-tests
+        shell: bash
+        run: |
+          npm run test
