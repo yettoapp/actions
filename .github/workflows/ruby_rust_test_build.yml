@@ -60,6 +60,10 @@ jobs:
           platform: ${{ matrix.platform }}
           ruby-versions: "${{ env.SUPPORTED_RUBY_VERSIONS }}"
 
+      - name: Display structure of built gems
+        run: ls -R
+        working-directory: pkg/
+
       - uses: oxidize-rb/actions/test-gem-build@main
         with:
           platform: ${{ matrix.platform }}
