@@ -37,8 +37,10 @@ jobs:
       - name: Merge production branch
         if: ${{ inputs.forced == false && github.ref != 'refs/heads/production' }}
         shell: bash
-        run: |
-          gh pr update-branch
+        run: | # only does this if a PR is open
+          if gh pr list --head "${{ github.ref_name }}" --state open --json number | grep -q "number"; then
+            gh pr update-branch
+          fi
         env:
           GH_TOKEN: ${{ secrets.gh_token }}
 
