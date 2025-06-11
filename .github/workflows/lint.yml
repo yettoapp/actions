@@ -62,7 +62,7 @@ jobs:
 
       - name: Commit linted files
         if: always()
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "[auto-lint]: Lint files"
           commit_user_name: Sisyphus
