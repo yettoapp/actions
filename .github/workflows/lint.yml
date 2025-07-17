@@ -46,7 +46,7 @@ jobs:
         if: ${{ inputs.ruby }}
         run: bundle exec rubocop -A
 
-      - name: ESLint
+      - name: JS Lint
         if: ${{ inputs.node }}
         run: npm run lint:fix
 
