@@ -32,7 +32,7 @@ jobs:
     name: Fly
     runs-on: ubuntu-latest-m
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Merge production branch
         if: ${{ inputs.forced == false && github.ref != 'refs/heads/production' }}

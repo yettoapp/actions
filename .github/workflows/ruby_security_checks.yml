@@ -14,7 +14,7 @@ jobs:
   bundle-audit:
     runs-on: ubuntu-latest-m
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.gh_token }}
@@ -32,7 +32,7 @@ jobs:
   brakeman: # A static analysis security vulnerability scanner for Ruby on Rails applications
     runs-on: ubuntu-latest-m
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.gh_token }}
