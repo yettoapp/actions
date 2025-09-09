@@ -76,6 +76,14 @@ jobs:
             });
             return deployment.data.id
 
+      - name: Restore Vite dependencies cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules/.vite
+          key: vite-deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json', '**/vite.config.*') }}
+          restore-keys: |
+            vite-deps-${{ runner.os }}-
+
       - uses: yettoapp/actions/setup-fly@main
 
       # note that build secrets are defined on a per app basis, but due
@@ -97,6 +105,14 @@ jobs:
           -c vendor/fly/fly-${{ inputs.target }}.toml
         env:
           FLY_API_TOKEN: ${{ secrets.fly_token }}
+
+      - name: Cache Vite dependencies
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.vite
+          key: vite-deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json', '**/vite.config.*') }}
+          restore-keys: |
+            vite-deps-${{ runner.os }}-
 
       - name: update deployment status
         uses: actions/github-script@v8
