@@ -91,8 +91,7 @@ jobs:
       - name: Deploy to Fly.io
         timeout-minutes: 10
         run: |
-          flyctl deploy --remote-only \
-          ${{ env.DEPLOY_FLAG }}
+          flyctl deploy --remote-only ${{ env.DEPLOY_FLAG }} \
           --build-arg CACHEBUST=$(date +%s) \
           --build-arg GIT_SHA=${{ github.sha }} \
           --build-arg REGISTRY=ghcr.io/ \
