@@ -78,6 +78,13 @@ jobs:
 
       - uses: yettoapp/actions/setup-fly@main
 
+      - name: Set deploy flag
+        id: deploy_flag
+        run: |
+          if [[ "${{ inputs.forced }}" == "true" ]]; then
+            echo "DEPLOY_FLAG=--deploy immediate" >> $GITHUB_ENV
+          fi
+
       # note that build secrets are defined on a per app basis, but due
       # to a limitation in GitHub Actions, we can't define them in the
       # workflow_call inputs. if these are not set, they harmlessly default to `""`
@@ -85,6 +92,7 @@ jobs:
         timeout-minutes: 10
         run: |
           flyctl deploy --remote-only \
+          ${{ env.DEPLOY_FLAG }}
           --build-arg CACHEBUST=$(date +%s) \
           --build-arg GIT_SHA=${{ github.sha }} \
           --build-arg REGISTRY=ghcr.io/ \
