@@ -82,7 +82,7 @@ jobs:
         id: deploy_flag
         run: |
           if [[ "${{ inputs.forced }}" == "true" ]]; then
-            echo "DEPLOY_FLAG=--deploy immediate" >> $GITHUB_ENV
+            echo "DEPLOY_FLAG=--strategy immediate" >> $GITHUB_ENV
           fi
 
       # note that build secrets are defined on a per app basis, but due
