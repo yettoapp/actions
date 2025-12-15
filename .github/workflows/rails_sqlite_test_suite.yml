@@ -104,7 +104,7 @@ jobs:
             tmp/cache/vite
           key: asset-cache-${{ runner.os }}-${{ steps.new-vite-cache-key.outputs.digest }}
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: ${{ always() && inputs.system_tests == true && steps.run-tests.outcome == 'failure' }}
         with:
           name: capybara_failure_screenshots
