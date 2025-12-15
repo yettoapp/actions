@@ -54,7 +54,7 @@ jobs:
       - name: Create Hephaestus Pull Request
         id: hephaestus-pr
         if: ${{ github.event.inputs.action == 'hephaestus' }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           add-paths: "Gemfile.lock"
           commit-message: "Update Hephaestus to v${{ env.HEPHAESTUS_VERSION }}"
@@ -84,7 +84,7 @@ jobs:
       - name: Create Ruby Pull Request
         id: ruby-pr
         if: ${{ github.event.inputs.action == 'ruby' }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "Update Ruby to v${{ github.event.inputs.value }}"
           title: "Update Ruby to v${{ github.event.inputs.value }}"
